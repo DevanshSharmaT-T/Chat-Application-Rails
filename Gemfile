@@ -75,3 +75,7 @@ gem "pundit", "~> 2.5"
 # gem "uuid_v7", "~> 0.1.6"
 
 gem "tailwindcss-rails", "~> 4.4"
+
+gem "jquery-rails", "~> 4.6"
+
+gem "jquery-infinite-pages", "~> 0.2.0"
