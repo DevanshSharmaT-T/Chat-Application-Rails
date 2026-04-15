@@ -21,6 +21,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" nonce="<%= content_security_policy_nonce %>"></script>
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :application, "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag :tailwind, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
@@ -48,22 +49,30 @@
                 </div>
               </button>
 
-              <div id="profile-dropdown-menu" class="dropdown-menu hidden absolute right-0 mt-2 w-64 bg-gray-800 rounded-md shadow-lg z-50 ring-1 ring-gray-700">
-                <div class="py-1">
-                  <% if @pending_requests.present? && @pending_requests.any? %>
-                    <div class="px-4 py-2 border-b border-gray-700">
-                      <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2">Pending Requests</p>
-                      <% @pending_requests.each do |req| %>
-                        <div class="flex items-center justify-between mb-2 last:mb-0">
-                          <span class="text-sm text-gray-200 truncate pr-2"><%= req.user.full_name %></span>
-                          <%= button_to "Approve", friend_path(req, friend: { status: 'accepted' }), method: :patch, class: "text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded transition-colors" %>
-                        </div>
-                      <% end %>
-                    </div>
+              <div id="profile-dropdown-menu" class="dropdown-menu hidden" style="position:absolute;right:0;top:calc(100% + 8px);z-index:9999;min-width:220px;">
+                <div class="py-2 px-1">
+
+                  <%# Pending badge — quick count %>
+                  <% pending_count = @pending_requests&.count || 0 %>
+
+                  <%= link_to requests_friends_path, class: "flex items-center justify-between px-3 py-2.5 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors" do %>
+                    <span>🔔 Requests</span>
+                    <% if pending_count > 0 %>
+                      <span class="bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full"><%= pending_count %></span>
+                    <% end %>
                   <% end %>
-                  <%= link_to "View Profile", user_path(current_user), class: "block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors" %>
-                  <div class="border-t border-gray-700 my-1"></div>
-                  <%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-red-400 transition-colors bg-transparent border-none cursor-pointer" %>                </div>
+
+                  <%= link_to new_group_path, class: "flex items-center px-3 py-2.5 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors" do %>
+                    <span>🔥 Create Tribe</span>
+                  <% end %>
+
+                  <%= link_to "👤 View Profile", user_path(current_user), class: "flex items-center px-3 py-2.5 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors" %>
+
+                  <div class="border-t border-gray-800 my-1"></div>
+
+                  <%= button_to "🚪 Sign Out", destroy_user_session_path, method: :delete,
+                        class: "flex items-center w-full text-left px-3 py-2.5 text-sm text-red-400 hover:bg-red-900/20 rounded-lg transition-colors bg-transparent border-none cursor-pointer" %>
+                </div>
               </div>
             </div>
           </div>

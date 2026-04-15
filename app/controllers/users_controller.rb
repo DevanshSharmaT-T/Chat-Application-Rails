@@ -1,7 +1,6 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
   before_action :set_user, only: :show
-  before_action :set_pending_requests, only: [:dashboard, :show]
   
   def dashboard
     friend_ids = Friend.where(user_id: current_user.id).select(:friend_user_id)
@@ -33,10 +32,6 @@ class UsersController < ApplicationController
 
   def set_user
     @user = current_user
-  end
-
-  def set_pending_requests
-    @pending_requests = Friend.where(friend_user_id: current_user.id, status: :pending)
   end
 
 end

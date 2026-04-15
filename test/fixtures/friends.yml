@@ -4,7 +4,7 @@
 #
 #  id             :uuid             not null, primary key
 #  deleted_at     :datetime
-#  status         :integer          default(0)
+#  status         :integer          default("pending")
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  friend_user_id :uuid             not null

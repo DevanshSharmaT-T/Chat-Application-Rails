@@ -63,8 +63,25 @@
         const body = $('#chat-message-body').val().trim();
         if (!chatId || body.length === 0) return;
 
-        window.ChatRealtime?.send(chatId, body);
-        $('#chat-message-body').val('');
+        const $input = $('#chat-message-body');
+        const $btn = $(this).find('[type="submit"]');
+        $btn.prop('disabled', true);
+
+        $.ajax({
+          url: '/chats/' + chatId + '/messages',
+          method: 'POST',
+          data: { message: { body: body }, authenticity_token: $('meta[name="csrf-token"]').attr('content') },
+          success: function() {
+            $input.val('');
+          },
+          error: function(xhr) {
+            alert('Cannot send! ' + (xhr.responseJSON?.errors || 'Unknown error'));
+          },
+          complete: function() {
+            $btn.prop('disabled', false);
+            $input.focus();
+          }
+        });
       });
     }
 
