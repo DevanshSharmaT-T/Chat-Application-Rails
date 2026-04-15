@@ -31,4 +31,10 @@ class Group < ApplicationRecord
 
   after_create :create_group_chat
 
+  private
+
+  def create_group_chat
+    create_chat!(chat_name: name, description: description)
+  end
+
 end

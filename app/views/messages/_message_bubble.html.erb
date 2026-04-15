@@ -1,0 +1,10 @@
+<% mine = message.user_id == current_user.id %>
+<div class="flex <%= mine ? 'justify-end' : 'justify-start' %> message-item mb-2" data-message-id="<%= message.id %>">
+  <div class="<%= mine ? 'chat-bubble-me' : 'chat-bubble-them' %>">
+    <% if message.chat.chatable_type == "Group" && !mine %>
+      <p class="text-[10px] text-blue-400 mb-1 font-semibold"><%= message.user.full_name %></p>
+    <% end %>
+    <p class="text-sm break-words"><%= message.body %></p>
+    <p class="text-[10px] opacity-70 mt-1 timeago text-right" datetime="<%= message.created_at.iso8601 %>"><%= message.created_at.iso8601 %></p>
+  </div>
+</div>

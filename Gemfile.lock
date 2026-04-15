@@ -337,6 +337,11 @@ GEM
       ffi (~> 1.12)
       logger
     securerandom (0.4.1)
+    solid_cable (3.0.12)
+      actioncable (>= 7.2)
+      activejob (>= 7.2)
+      activerecord (>= 7.2)
+      railties (>= 7.2)
     sshkit (1.25.0)
       base64
       logger
@@ -411,6 +416,7 @@ DEPENDENCIES
   pundit (~> 2.5)
   rails (~> 8.1.1)
   rubocop-rails-omakase
+  solid_cable
   stimulus-rails
   tailwindcss-rails (~> 4.4)
   turbo-rails

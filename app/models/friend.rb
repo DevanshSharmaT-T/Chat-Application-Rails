@@ -4,6 +4,7 @@
 #
 #  id             :uuid             not null, primary key
 #  deleted_at     :datetime
+#  status         :integer          default(0)
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  friend_user_id :uuid             not null
@@ -24,11 +25,18 @@ class Friend < ApplicationRecord
 
   acts_as_paranoid
 
+  enum :status, { pending: 0, accepted: 1 }
+
   belongs_to :user
   belongs_to :friend_user, class_name: "User"
   has_one :chat, as: :chatable, dependent: :destroy
 
   after_create :create_dm
 
+  private
+
+  def create_dm
+    create_chat!(chat_name: "#{user.full_name} & #{friend_user.full_name}")
+  end
 
 end

@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  mount ActionCable.server => "/cable"
   devise_for :users
 
 
@@ -9,8 +10,10 @@ Rails.application.routes.draw do
     get :find_friends, on: :collection, as: :find_friends
   end
   
-  resources :friends, only: [:index, :create, :destroy]
+  resources :friends, only: [:index, :create, :destroy, :update]
   resources :groups, only: [:index, :show, :create]
+  get "chats/:chat_id/messages", to: "messages#show", as: :chat_messages
+  post "chats/:chat_id/messages", to: "messages#create"
     
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

@@ -1,42 +1,106 @@
-<div class="max-w-4xl mx-auto p-8">
-  <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
-    <h1 id="dashboard-title" class="text-3xl font-bold tracking-tight text-blue-500">Friends</h1>
-    <%= link_to "Sign Out", destroy_user_session_path, data: { "turbo-method": :delete }, class: "text-sm text-gray-500 hover:text-red-500 transition-colors" %>
-  </div>
+<div class="max-w-6xl mx-auto p-8">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <section class="lg:col-span-1 card-main">
+      <div class="mb-6 border-b border-gray-800 pb-4">
+        <h1 id="dashboard-title" class="text-2xl font-bold tracking-tight text-blue-500">Friends</h1>
+      </div>
 
-  <div class="flex gap-4 mb-8">
-    <button class="tab-button active-tab" data-target="friends" data-url="<%= friends_path %>">Friends</button>
-    <button class="tab-button" data-target="groups" data-url="<%= groups_path %>">Groups</button>
-    <button class="tab-button" data-target="find" data-url="<%= find_friends_users_path %>">Find Friends</button>
-  </div>
+      <div class="flex flex-wrap gap-3 mb-6">
+        <button class="tab-button dashboard-tab nav-link dashboard-tab-active" data-target="friends" data-url="<%= friends_path %>">Friends</button>
+        <button class="tab-button dashboard-tab nav-link" data-target="groups" data-url="<%= groups_path %>">Groups</button>
+        <button class="tab-button dashboard-tab nav-link" data-target="find_friends" data-url="<%= find_friends_users_path %>">Find Friends</button>
+      </div>
 
-  <div id="dashboard-content">
-     <%= render template: 'friends/index' %>
+      <div id="dashboard-content">
+        <%= render template: "friends/index" %>
+      </div>
+    </section>
+
+    <section class="lg:col-span-2" id="chat-window">
+      <div class="card-main h-[70vh] flex items-center justify-center text-center">
+        <p class="text-gray-500">Pick friend or group. Fire talk start.</p>
+      </div>
+    </section>
   </div>
 </div>
 
-<style>
-    .tab-button { @apply px-4 py-2 rounded-lg border border-gray-800 text-gray-400 hover:text-white transition-all; }
-    .active-tab { @apply border-blue-500 text-blue-500 bg-blue-900/10; }
-</style>
+<script nonce="<%= content_security_policy_nonce %>">
+  $(function() {
+    window.currentUserId = "<%= current_user.id %>";
+    window.activeChatType = null;
 
-<script type="text/javascript" nonce="true">
-$(document).on('turbo:load', function() {
-  $(document).on('ready turbo:load', function() {
-    $('.tab-button').on('click', function() {
+    function bootTimeago() {
+      if (window.timeago?.render) {
+        window.timeago.render(document.querySelectorAll('.timeago'));
+      }
+    }
+
+    function scrollToBottom() {
+      const $container = $('#messages-scroll-container');
+      $container.scrollTop($container.prop('scrollHeight'));
+    }
+
+    function bindOlderMessages() {
+      $('#chat-window').off('click.olderMessages', '.older-messages-link').on('click.olderMessages', '.older-messages-link', function(event) {
+        event.preventDefault();
+        const url = $(this).attr('href');
+
+        $.get(url, function(html) {
+          const $payload = $('<div>').html(html);
+          const $batch = $payload.find('#older-messages-batch').children();
+          const $nextLink = $payload.find('#older-next-link').html();
+          $('#messages-list').prepend($batch);
+          $('#history-loader').html($nextLink);
+          bootTimeago();
+        });
+      });
+    }
+
+    function bindMessageForm() {
+      $('#chat-window').off('submit.chatForm', '#chat-message-form').on('submit.chatForm', '#chat-message-form', function(event) {
+        event.preventDefault();
+        const chatId = $('#active-chat-window').data('chat-id');
+        const body = $('#chat-message-body').val().trim();
+        if (!chatId || body.length === 0) return;
+
+        window.ChatRealtime?.send(chatId, body);
+        $('#chat-message-body').val('');
+      });
+    }
+
+    function bindConversationRows() {
+      $('#dashboard-content').off('click.chatLoad', '.friend-row, .group-row').on('click.chatLoad', '.friend-row, .group-row', function() {
+        const chatId = $(this).data('chat-id');
+        const chatType = $(this).data('chat-type');
+        if (!chatId) return;
+
+        window.activeChatType = chatType;
+        $('#chat-window').load('/chats/' + chatId + '/messages', function() {
+          window.ChatRealtime?.subscribe(chatId);
+          bootTimeago();
+          scrollToBottom();
+          bindOlderMessages();
+          bindMessageForm();
+        });
+      });
+    }
+
+    $(document).off('click.dashboardTabs', '.tab-button').on('click.dashboardTabs', '.tab-button', function() {
       const $btn = $(this);
       const url = $btn.data('url');
-      const target = $btn.data('target');
 
-      $('.tab-button').removeClass('active-tab');
-      $btn.addClass('active-tab');
+      $('.tab-button').removeClass('dashboard-tab-active');
+      $btn.addClass('dashboard-tab-active');
       $('#dashboard-title').text($btn.text());
 
       $('#dashboard-content').fadeOut(100, function() {
         $(this).load(url, function() {
           $(this).fadeIn(100);
+          bindConversationRows();
         });
       });
     });
+
+    bindConversationRows();
   });
 </script>

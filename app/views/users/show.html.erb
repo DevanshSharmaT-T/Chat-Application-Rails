@@ -1,0 +1,30 @@
+<div class="max-w-2xl mx-auto p-8">
+  <div class="card-main">
+    <div class="flex items-center gap-4 mb-6">
+      <div class="avatar-circle w-14 h-14 text-xl">
+        <%= @user.first_name.to_s.first&.upcase || @user.email.to_s.first&.upcase %>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold text-gray-200"><%= @user.full_name %></h1>
+        <p class="text-sm text-gray-500"><%= @user.status.presence || "offline" %></p>
+      </div>
+    </div>
+
+    <div class="space-y-4">
+      <div class="border border-gray-800 rounded-xl p-4">
+        <p class="text-xs text-gray-500 uppercase tracking-wide">Email</p>
+        <p class="text-gray-200 mt-1"><%= @user.email %></p>
+      </div>
+
+      <div class="border border-gray-800 rounded-xl p-4">
+        <p class="text-xs text-gray-500 uppercase tracking-wide">Role</p>
+        <p class="text-gray-200 mt-1"><%= @user.role.to_s.humanize %></p>
+      </div>
+
+      <div class="border border-gray-800 rounded-xl p-4">
+        <p class="text-xs text-gray-500 uppercase tracking-wide">Status</p>
+        <p class="text-gray-200 mt-1"><%= @user.status.presence || "offline" %></p>
+      </div>
+    </div>
+  </div>
+</div>
