@@ -79,3 +79,5 @@ gem "tailwindcss-rails", "~> 4.4"
 gem "jquery-rails", "~> 4.6"
 
 gem "jquery-infinite-pages", "~> 0.2.0"
+
+gem "annotated", "~> 0.1.1"
