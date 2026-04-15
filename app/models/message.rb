@@ -27,4 +27,20 @@ class Message < ApplicationRecord
 
   belongs_to :user
   belongs_to :chat
+
+  validates :body, presence: true
+
+  after_create_commit :broadcast_message
+
+  private
+
+  def broadcast_message
+    payload_json = ApplicationController.render(
+      template: "messages/message",
+      formats: [ :json ],
+      assigns: { message: self }
+    )
+
+    ActionCable.server.broadcast("chat_#{chat_id}", JSON.parse(payload_json))
+  end
 end

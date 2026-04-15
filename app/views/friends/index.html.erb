@@ -1,10 +1,11 @@
 <% if @friends_list.any? %>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <% @friends_list.each do |friend| %>
-      <% friendship = current_user.friendships.find_by(friend_user_id: friend.id) %>
+      <% friendship = Friend.find_by(user_id: current_user.id, friend_user_id: friend.id) || Friend.find_by(user_id: friend.id, friend_user_id: current_user.id) %>
 
       <div class="friend-row bg-gray-900 border border-gray-800 p-4 rounded-xl flex items-center gap-4 cursor-pointer hover:border-blue-500/50 transition-all" 
-           data-chat-id="<%= friendship&.chat&.id %>">
+           data-chat-id="<%= friendship&.chat&.id %>"
+           data-chat-type="Friend">
         <div class="w-12 h-12 bg-blue-900/30 text-blue-400 rounded-full flex items-center justify-center font-bold">
           <%= friend.first_name[0] %>
         </div>

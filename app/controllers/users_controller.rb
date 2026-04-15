@@ -1,8 +1,12 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_user, only: :show
+  before_action :set_pending_requests, only: [:dashboard, :show]
   
   def dashboard
-     @friends_list = current_user.friends
+    friend_ids = Friend.where(user_id: current_user.id).select(:friend_user_id)
+    inverse_ids = Friend.where(friend_user_id: current_user.id).select(:user_id)
+    @friends_list = User.where(id: friend_ids).or(User.where(id: inverse_ids))
   end
 
 
@@ -11,15 +15,28 @@ class UsersController < ApplicationController
     if request.xhr?
       render partial: "users/tabs/find_friends", layout: false
     else
+      friend_ids = Friend.where(user_id: current_user.id).select(:friend_user_id)
+      inverse_ids = Friend.where(friend_user_id: current_user.id).select(:user_id)
+      @friends_list = User.where(id: friend_ids).or(User.where(id: inverse_ids))
       render :dashboard
     end
   end
-  
+
   def show
-    # authorize @user
+    if @user != current_user
+      redirect_to dashboard_users_path, alert: "You are not authorized to view this profile."
+      return
+    end
   end
 
   private
 
+  def set_user
+    @user = current_user
+  end
+
+  def set_pending_requests
+    @pending_requests = Friend.where(friend_user_id: current_user.id, status: :pending)
+  end
 
 end

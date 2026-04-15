@@ -1,0 +1,42 @@
+<div class="card-main h-[70vh] flex flex-col" data-chat-id="<%= chat.id %>" id="active-chat-window">
+  <div class="border-b border-gray-800 pb-4 mb-4">
+    <h2 class="text-lg font-semibold text-gray-200">
+      <%= chat.chat_name.presence || "Chat" %>
+    </h2>
+    <p class="text-xs text-gray-500">
+      <%= chat.chatable_type == "Group" ? "Group chat" : "Direct chat" %>
+    </p>
+  </div>
+
+  <div class="flex-1 overflow-y-auto space-y-3 pr-2" id="messages-scroll-container">
+    <div id="history-loader" class="mb-3">
+      <% if next_page.present? %>
+        <%= link_to "Load older", chat_messages_path(chat_id: chat.id, page: next_page, prepend: 1), class: "text-xs text-blue-400 nav-link older-messages-link" %>
+      <% end %>
+    </div>
+
+    <div id="messages-list" class="space-y-3">
+      <%= render partial: "messages/message_bubble", collection: messages, as: :message %>
+    </div>
+  </div>
+
+  <div class="border-t border-gray-800 pt-4 mt-4">
+    <% if chat.chatable_type == 'Friend' && chat.chatable.status == 'pending' %>
+      <div class="text-center py-3 bg-gray-900 rounded-lg border border-gray-800">
+        <p class="text-yellow-500 font-semibold" id="waiting-for-friend-msg">Waiting for Friend</p>
+        <p class="text-xs text-gray-500 mt-1">Friend must approve before talk start.</p>
+      </div>
+    <% else %>
+      <form id="chat-message-form" class="flex items-center gap-2">
+        <input type="hidden" name="chat_id" value="<%= chat.id %>">
+        <button type="button" id="emoji-toggle" class="nav-link px-2 py-1 border border-gray-800 rounded-lg transition-colors hover:bg-gray-800">😀</button>
+        <input type="text" name="body" id="chat-message-body" class="form-input !py-2 w-full bg-gray-900 border border-gray-800 rounded-lg text-gray-200 px-3 focus:outline-none focus:border-blue-500 transition-colors" placeholder="Type message..." autocomplete="off">
+        <button type="submit" class="btn-primary bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-medium transition-colors">Send</button>
+      </form>
+    <% end %>
+
+    <div class="mt-2 text-xs text-gray-500">
+      File clip UI hook ready. Active Storage need install migration first.
+    </div>
+  </div>
+</div>

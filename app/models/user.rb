@@ -14,7 +14,7 @@
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string
-#  role                   :integer          default(0)
+#  role                   :integer          default("user")
 #  status                 :text
 #  unlock_token           :string
 #  created_at             :datetime         not null
@@ -35,7 +35,10 @@ class User < ApplicationRecord
   has_many :group_members
   has_many :groups, through: :group_members
   has_many :owned_groups, class_name: "Group", foreign_key: :user_id, dependent: :destroy
-  has_many :friends, dependent: :destroy
+  has_many :friendships, class_name: "Friend", dependent: :destroy
+  has_many :friend_users, through: :friendships, source: :friend_user
+  has_many :inverse_friendships, class_name: "Friend", foreign_key: :friend_user_id, dependent: :destroy
+  has_many :inverse_friend_users, through: :inverse_friendships, source: :user
   has_many :messages, dependent: :destroy
 
 

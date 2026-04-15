@@ -9,6 +9,7 @@
  * Consider organizing styles into separate files for maintainability.
  */
 @import "background.css";
+@import "application.tailwind.css";
 
 @theme {
   --color-brand-dark: #020617;

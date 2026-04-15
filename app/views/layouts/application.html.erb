@@ -18,9 +18,10 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" nonce="<%= content_security_policy_nonce %>"></script>
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag :tailwind, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
@@ -31,9 +32,69 @@
     </div>
 
     <main class="relative z-10">
-      <p class="notice"><%= notice %></p>
-      <p class="alert"><%= alert %></p>
-    <%= yield %>
+      <% if user_signed_in? %>
+        <header class="max-w-6xl mx-auto px-6 pt-6" style="overflow: visible !important;">
+          <div class="flex items-center justify-between card-main" style="overflow: visible !important; position: relative; z-index: 40;">
+            <%= link_to "Chat App", dashboard_users_path, class: "text-lg font-semibold text-blue-500 tracking-tight" %>
+
+            <div class="relative">
+              <button id="profile-dropdown-toggle" type="button" class="flex items-center gap-3 nav-link">
+                <div class="avatar-circle w-10 h-10">
+                  <%= current_user.first_name.to_s.first&.upcase || current_user.email.to_s.first&.upcase %>
+                </div>
+                <div class="text-left">
+                  <p class="text-sm text-gray-200 font-medium"><%= current_user.full_name %></p>
+                  <p class="text-xs text-gray-500"><%= current_user.status.presence || "offline" %></p>
+                </div>
+              </button>
+
+              <div id="profile-dropdown-menu" class="dropdown-menu hidden absolute right-0 mt-2 w-64 bg-gray-800 rounded-md shadow-lg z-50 ring-1 ring-gray-700">
+                <div class="py-1">
+                  <% if @pending_requests.present? && @pending_requests.any? %>
+                    <div class="px-4 py-2 border-b border-gray-700">
+                      <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2">Pending Requests</p>
+                      <% @pending_requests.each do |req| %>
+                        <div class="flex items-center justify-between mb-2 last:mb-0">
+                          <span class="text-sm text-gray-200 truncate pr-2"><%= req.user.full_name %></span>
+                          <%= button_to "Approve", friend_path(req, friend: { status: 'accepted' }), method: :patch, class: "text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded transition-colors" %>
+                        </div>
+                      <% end %>
+                    </div>
+                  <% end %>
+                  <%= link_to "View Profile", user_path(current_user), class: "block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors" %>
+                  <div class="border-t border-gray-700 my-1"></div>
+                  <%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-red-400 transition-colors bg-transparent border-none cursor-pointer" %>                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+      <% end %>
+
+      <div class="max-w-6xl mx-auto px-6 py-4">
+        <% if notice.present? %>
+          <p class="notice text-sm text-blue-400 mb-2"><%= notice %></p>
+        <% end %>
+        <% if alert.present? %>
+          <p class="alert text-sm text-red-500 mb-2"><%= alert %></p>
+        <% end %>
+      </div>
+
+      <%= yield %>
     </main>
+
+    <script type="text/javascript" nonce="<%= content_security_policy_nonce %>">
+      $(document).off('click', '#profile-dropdown-toggle').on('click', '#profile-dropdown-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("Chief click head!"); // Look in console for this!
+        $('#profile-dropdown-menu').toggleClass('hidden');
+      });
+      
+     $(document).on('click', function(e) {
+        if (!$(e.target).closest('#profile-dropdown-toggle, #profile-dropdown-menu').length) {
+            $('#profile-dropdown-menu').addClass('hidden');
+        }
+     });
+    </script>
   </body>
 </html>
