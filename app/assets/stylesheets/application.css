@@ -8,3 +8,11 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+@import "background.css";
+
+@theme {
+  --color-brand-dark: #020617;
+  --color-brand-surface: rgba(15, 23, 42, 0.8); /* Made semi-transparent for the effect */
+  --color-brand-primary: #3b82f6;
+  --color-brand-border: #1e293b;
+}

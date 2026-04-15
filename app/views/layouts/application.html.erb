@@ -24,9 +24,18 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body class="antialiased">
+
+    <div class="bg-animated-layer">
+      <div class="el"></div>
+    </div>
+
+    <h1 class="bg-text">CHAT</h1>
+
+    <main class="relative z-10">
       <p class="notice"><%= notice %></p>
       <p class="alert"><%= alert %></p>
     <%= yield %>
+    </main>
   </body>
 </html>
