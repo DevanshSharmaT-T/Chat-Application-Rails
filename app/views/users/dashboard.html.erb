@@ -1,0 +1,42 @@
+<div class="max-w-4xl mx-auto p-8">
+  <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
+    <h1 id="dashboard-title" class="text-3xl font-bold tracking-tight text-blue-500">Friends</h1>
+    <%= link_to "Sign Out", destroy_user_session_path, data: { "turbo-method": :delete }, class: "text-sm text-gray-500 hover:text-red-500 transition-colors" %>
+  </div>
+
+  <div class="flex gap-4 mb-8">
+    <button class="tab-button active-tab" data-target="friends" data-url="<%= friends_path %>">Friends</button>
+    <button class="tab-button" data-target="groups" data-url="<%= groups_path %>">Groups</button>
+    <button class="tab-button" data-target="find" data-url="<%= find_friends_users_path %>">Find Friends</button>
+  </div>
+
+  <div id="dashboard-content">
+     <%= render template: 'friends/index' %>
+  </div>
+</div>
+
+<style>
+    .tab-button { @apply px-4 py-2 rounded-lg border border-gray-800 text-gray-400 hover:text-white transition-all; }
+    .active-tab { @apply border-blue-500 text-blue-500 bg-blue-900/10; }
+</style>
+
+<script type="text/javascript" nonce="true">
+$(document).on('turbo:load', function() {
+  $(document).on('ready turbo:load', function() {
+    $('.tab-button').on('click', function() {
+      const $btn = $(this);
+      const url = $btn.data('url');
+      const target = $btn.data('target');
+
+      $('.tab-button').removeClass('active-tab');
+      $btn.addClass('active-tab');
+      $('#dashboard-title').text($btn.text());
+
+      $('#dashboard-content').fadeOut(100, function() {
+        $(this).load(url, function() {
+          $(this).fadeIn(100);
+        });
+      });
+    });
+  });
+</script>

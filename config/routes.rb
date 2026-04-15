@@ -2,7 +2,16 @@ Rails.application.routes.draw do
   devise_for :users
 
 
-  root to: "friends#index"
+  root to: "users#dashboard"
+  
+  resources :users, only: [:show] do
+    get :dashboard, on: :collection
+    get :find_friends, on: :collection, as: :find_friends
+  end
+  
+  resources :friends, only: [:index, :create, :destroy]
+  resources :groups, only: [:index, :show, :create]
+    
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

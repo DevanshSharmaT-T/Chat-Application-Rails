@@ -1,28 +1,22 @@
-<div class="min-h-screen bg-black text-white p-8">
-  <div class="max-w-4xl mx-auto">
-    <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
-      <h1 class="text-3xl font-bold tracking-tight text-blue-500">Friends</h1>
-      <%= link_to "Sign Out", destroy_user_session_path, data: { "turbo-method": :delete }, class: "text-sm text-gray-500 hover:text-red-500 transition-colors" %>
-    </div>
+<% if @friends_list.any? %>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <% @friends_list.each do |friend| %>
+      <% friendship = current_user.friendships.find_by(friend_user_id: friend.id) %>
 
-    <% if @friends_list.any? %>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <% @friends_list.each do |friend| %>
-          <div class="bg-gray-900 border border-gray-800 p-4 rounded-xl flex items-center gap-4">
-            <div class="w-12 h-12 bg-blue-900/30 text-blue-400 rounded-full flex items-center justify-center font-bold">
-              <%= friend.first_name[0] %>
-            </div>
-            <div>
-              <p class="font-medium text-gray-200"><%= friend.first_name %> <%= friend.last_name %></p>
-              <p class="text-xs text-gray-500 line-clamp-1"><%= friend.status %></p>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    <% else %>
-      <div class="text-center py-20 bg-gray-900/50 rounded-2xl border border-dashed border-gray-800">
-        <p class="text-gray-500">No friends found. Use the search to find people.</p>
+      <div class="friend-row bg-gray-900 border border-gray-800 p-4 rounded-xl flex items-center gap-4 cursor-pointer hover:border-blue-500/50 transition-all" 
+           data-chat-id="<%= friendship&.chat&.id %>">
+        <div class="w-12 h-12 bg-blue-900/30 text-blue-400 rounded-full flex items-center justify-center font-bold">
+          <%= friend.first_name[0] %>
+        </div>
+        <div>
+          <p class="font-medium text-gray-200"><%= friend.full_name %></p>
+          <p class="text-xs text-gray-500 line-clamp-1"><%= friend.status %></p>
+        </div>
       </div>
     <% end %>
   </div>
-</div>
+<% else %>
+  <div class="text-center py-20 bg-gray-900/50 rounded-2xl border border-dashed border-gray-800">
+    <p class="text-gray-500">No friends found. Use the search to find people.</p>
+  </div>
+<% end %>
