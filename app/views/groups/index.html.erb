@@ -1,17 +1,26 @@
 <% if @groups_list.any? %>
   <div class="grid gap-4">
     <% @groups_list.each do |group| %>
-      <div class="card-main group-row cursor-pointer hover:border-blue-500/40 transition-all" data-chat-id="<%= group.chat&.id %>" data-chat-type="Group">
-        <div class="flex items-center gap-4">
-          <div class="avatar-circle w-12 h-12">
-            <%= group.name.to_s.first&.upcase || "G" %>
-          </div>
-          <div>
-            <p class="font-medium text-gray-200"><%= group.name %></p>
-            <p class="text-xs text-gray-500 line-clamp-1"><%= group.description.presence || "No group description yet." %></p>
-          </div>
+
+      <div class="group-row w-full bg-slate-900 border border-gray-800 p-4 rounded-xl flex items-center gap-4 cursor-pointer hover:border-green-500/50 transition-all"
+           data-chat-id="<%= group.chat&.id %>"
+           data-chat-type="Group">
+
+        <!-- Avatar (same style as friends) -->
+        <div class="w-12 h-12 bg-green-900/30 text-green-400 rounded-full flex items-center justify-center font-bold">
+          <%= group.name.to_s.first&.upcase || "G" %>
         </div>
+
+        <!-- Text -->
+        <div>
+          <p class="font-medium text-gray-200"><%= group.name %></p>
+          <p class="text-xs text-gray-500 line-clamp-1">
+            <%= group.description.presence || "No group description yet." %>
+          </p>
+        </div>
+
       </div>
+
     <% end %>
   </div>
 <% else %>
