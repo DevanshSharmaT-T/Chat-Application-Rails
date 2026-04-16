@@ -2,19 +2,27 @@
 #
 # Table name: chats
 #
-#  id            :uuid             not null, primary key
-#  chat_name     :string
-#  chatable_type :string           not null
-#  deleted_at    :datetime
-#  description   :text
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  chatable_id   :uuid             not null
+#  id               :uuid             not null, primary key
+#  chat_name        :string
+#  chat_type        :integer          default("direct")
+#  chatable_type    :string           not null
+#  deleted_at       :datetime
+#  description      :text
+#  last_activity_at :datetime
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  chatable_id      :uuid             not null
+#  last_message_id  :uuid
 #
 # Indexes
 #
-#  index_chats_on_chatable    (chatable_type,chatable_id)
-#  index_chats_on_deleted_at  (deleted_at)
+#  index_chats_on_chatable          (chatable_type,chatable_id)
+#  index_chats_on_deleted_at        (deleted_at)
+#  index_chats_on_last_activity_at  (last_activity_at)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (last_message_id => messages.id)
 #
 require "test_helper"
 

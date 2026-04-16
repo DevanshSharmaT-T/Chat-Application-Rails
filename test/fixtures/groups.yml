@@ -2,22 +2,27 @@
 #
 # Table name: groups
 #
-#  id          :uuid             not null, primary key
-#  deleted_at  :datetime
-#  description :text
-#  name        :string           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  user_id     :uuid             not null
+#  id            :uuid             not null, primary key
+#  avatar_url    :string
+#  deleted_at    :datetime
+#  description   :text
+#  group_type    :integer          default("private_group")
+#  invite_code   :string
+#  max_members   :integer          default(256)
+#  name          :string           not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  created_by_id :uuid             not null
 #
 # Indexes
 #
-#  index_groups_on_deleted_at  (deleted_at)
-#  index_groups_on_user_id     (user_id)
+#  index_groups_on_created_by_id                (created_by_id)
+#  index_groups_on_deleted_at                   (deleted_at)
+#  index_groups_on_invite_code_unique_not_null  (invite_code) UNIQUE WHERE (invite_code IS NOT NULL)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (user_id => users.id)
+#  fk_rails_...  (created_by_id => users.id)
 #
 
 one:
