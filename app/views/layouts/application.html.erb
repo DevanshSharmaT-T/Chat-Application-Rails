@@ -17,6 +17,7 @@
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" nonce="<%= content_security_policy_nonce %>"></script>
 
@@ -34,13 +35,35 @@
 
     <main class="relative z-10">
       <% if user_signed_in? %>
-        <header class="mx-auto px-6 pt-6" style="overflow: visible !important;">
-          <div class="flex items-center justify-between card-main" style="overflow: visible !important; position: relative; z-index: 40;">
-              <%= link_to dashboard_users_path, class: "text-5xl md:text-3xl font-extrabold tracking-tight text-blue-600 hover:text-blue-700 transition-colors duration-200" do %>
-                <span class="text-blue-600 hover:text-white">Chat</span>
-                <span class="text-gray-100 hover:text-blue-600">App</span>
-              <% end %>
-
+          <header class="mx-auto px-6 pt-6">
+            <div class="flex items-center justify-between card-main relative z-40">
+          
+              <!-- LEFT: Logo + Notice -->
+              <div class="flex items-center gap-4">
+          
+                <!-- Chat App -->
+                <%= link_to dashboard_users_path, class: "text-5xl md:text-3xl font-extrabold tracking-tight text-blue-600 hover:text-blue-700 transition-colors duration-200 flex items-center" do %>
+                  <span class="text-blue-600 hover:text-white">Chat</span>
+                  <span class="text-gray-100 hover:text-blue-600">App</span>
+                <% end %>
+          
+                <% if notice.present? %>
+                  <div class="relative max-w-xs px-4 py-2 rounded-2xl bg-blue-500 text-white shadow-sm text-sm leading-relaxed
+                              before:content-[''] before:absolute before:left-[-6px] before:top-1/2 before:-translate-y-1/2
+                              before:border-y-[6px] before:border-y-transparent before:border-r-[6px] before:border-r-blue-500">
+                    <%= notice %>
+                  </div>
+                <% elsif alert.present? %>
+                  <div class="relative max-w-xs px-4 py-2 rounded-2xl bg-red-500/90 text-white shadow-sm text-sm leading-relaxed
+                              before:content-[''] before:absolute before:left-[-6px] before:top-1/2 before:-translate-y-1/2
+                              before:border-y-[6px] before:border-y-transparent before:border-r-[6px] before:border-r-red-500">
+                    <%= alert %>
+                  </div>
+                <% end %>
+          
+              </div>
+          
+              <!-- RIGHT: Profile -->
               <div class="relative">
                 <button
                   id="profile-dropdown-toggle"
@@ -50,7 +73,7 @@
                   <div class="avatar-circle w-10 h-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 font-semibold border border-blue-200">
                     <%= current_user.first_name.to_s.first&.upcase || current_user.email.to_s.first&.upcase %>
                   </div>
-              
+          
                   <div class="text-left leading-tight">
                     <p class="text-sm font-medium text-white">
                       <%= current_user.full_name %>
@@ -60,16 +83,14 @@
                     </p>
                   </div>
                 </button>
-              
-                <!-- ✅ Improved Dropdown -->
+          
                 <div
                   id="profile-dropdown-menu"
                   class="dropdown-menu hidden absolute right-0 mt-2 w-56 rounded-2xl bg-gray-900 border border-gray-700 shadow-xl backdrop-blur-md z-50"
                 >
                   <div class="py-2 px-1">
-              
                     <% pending_count = @pending_requests&.count || 0 %>
-              
+          
                     <%= link_to requests_friends_path, class: "flex items-center justify-between px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors" do %>
                       <span>Requests</span>
                       <% if pending_count > 0 %>
@@ -78,39 +99,31 @@
                         </span>
                       <% end %>
                     <% end %>
-              
+          
                     <%= link_to new_group_path, class: "flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors" do %>
                       <span>Create Group</span>
                     <% end %>
-              
+          
                     <%= link_to "View Profile",
                       user_path(current_user),
                       class: "flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors"
                     %>
-              
+          
                     <div class="border-t border-gray-700 my-1"></div>
-              
+          
                     <%= button_to "Sign Out",
                       destroy_user_session_path,
                       method: :delete,
                       class: "flex items-center w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-900/20 rounded-lg transition-colors bg-transparent border-none cursor-pointer"
                     %>
-              
                   </div>
                 </div>
               </div>
-          </div>
-        </header>
+          
+            </div>
+          </header>
       <% end %>
 
-      <div>
-        <% if notice.present? %>
-          <p class="notice text-sm text-blue-400 mb-2"><%= notice %></p>
-        <% end %>
-        <% if alert.present? %>
-          <p class="alert text-sm text-red-500 mb-2"><%= alert %></p>
-        <% end %>
-      </div>
 
       <%= yield %>
     </main>

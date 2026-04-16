@@ -1,8 +1,13 @@
+<div class="min-h-screen flex items-center justify-center px-4">
 <div class="max-w-2xl mx-auto p-8 bg-brand-surface rounded-2xl border border-brand-border shadow-2xl">
+
   <h2 class="text-2xl font-bold text-white mb-6 text-center">Create Account</h2>
 
+  <%= render "devise/shared/auth_header" %>
+
   <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-4" }) do |f| %>
-    <%= render "devise/shared/error_messages", resource: resource %>
+
+    
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div>
@@ -34,7 +39,12 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <%= f.label :password, class: "block text-sm font-medium text-slate-400 mb-1" %>
-        <%= f.password_field :password, autocomplete: "new-password", class: "form-input" %>
+        <div class="relative flex items-center">
+          <%= f.password_field :password, autocomplete: "new-password", class: "form-input w-full pr-12 password-toggle-field" %>
+          <span class="material-icons absolute right-3 cursor-pointer text-slate-400 hover:text-white select-none toggle-password-btn">
+            visibility
+          </span>
+        </div>
         <% if @minimum_password_length %>
           <p class="text-[10px] text-slate-500 mt-1">(<%= @minimum_password_length %> chars min)</p>
         <% end %>
@@ -42,16 +52,40 @@
 
       <div>
         <%= f.label :password_confirmation, class: "block text-sm font-medium text-slate-400 mb-1" %>
-        <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-input" %>
+        <div class="relative flex items-center">
+          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-input w-full pr-12 password-toggle-field" %>
+          <span class="material-icons absolute right-3 cursor-pointer text-slate-400 hover:text-white select-none toggle-password-btn">
+            visibility
+          </span>
+        </div>
       </div>
     </div>
 
     <div class="pt-4">
       <%= f.submit "Sign up", class: "btn-primary w-full" %>
     </div>
+
   <% end %>
 
   <div class="mt-6 text-center">
     <%= render "devise/shared/links" %>
   </div>
 </div>
+</div>
+<script type="text/javascript" nonce="<%= content_security_policy_nonce %>">
+
+$(document).on("click", ".toggle-password-btn", function () {
+
+  const input = $(this).siblings(".password-toggle-field");
+  const icon = $(this);
+
+  if (input.attr("type") === "password") {
+    input.attr("type", "text");
+    icon.text("visibility_off");
+  } else {
+    input.attr("type", "password");
+    icon.text("visibility");
+  }
+});
+
+</script>
