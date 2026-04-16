@@ -1,48 +1,49 @@
 <div class="mx-auto p-8 pb-4">
   <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-    <section class="lg:col-span-1 card-main">
-      <div>
-        
-          <div class="mb-6 border-b border-gray-800 pb-4 flex gap-2">
-            <button
-              class="tab-button px-4 py-2 rounded-full text-sm font-semibold tracking-tight transition-all duration-200
-                     bg-blue-500/10 text-blue-400 border border-blue-400/30 shadow-sm
-                     dashboard-tab-active"
-              data-target="friends"
-              data-url="<%= friends_path %>">
-              Friends
-            </button>
-          
-            <button
-              class="tab-button px-4 py-2 rounded-full text-sm font-semibold tracking-tight transition-all duration-200
-                     text-gray-400 hover:text-blue-400 hover:bg-blue-500/10"
-              data-target="groups"
-              data-url="<%= groups_path %>">
-              Groups
-            </button>
-          
-            <button
-              class="tab-button px-4 py-2 rounded-full text-sm font-semibold tracking-tight transition-all duration-200
-                     text-gray-400 hover:text-blue-400 hover:bg-blue-500/10"
-              data-target="find_friends"
-              data-url="<%= find_friends_users_path %>">
-              Find Friends
-            </button>
-          </div>
-          
 
+    <!-- LEFT PANEL -->
+    <section class="lg:col-span-1 border-r border-gray-800 pr-4 card-main flex flex-col">
+
+      <!-- Tabs (border now connects to vertical border) -->
+      <div class="border-b border-gray-800 pb-3 flex gap-2">
+        <button
+          class="tab-button px-4 py-2 rounded-full text-sm font-semibold tracking-tight transition-all duration-200
+                 bg-blue-500/10 text-blue-400 border border-blue-400/30 shadow-sm"
+          data-target="friends"
+          data-url="<%= friends_path %>">
+          Friends
+        </button>
+
+        <button
+          class="tab-button px-4 py-2 rounded-full text-sm font-semibold tracking-tight transition-all duration-200
+                 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10"
+          data-target="groups"
+          data-url="<%= groups_path %>">
+          Groups
+        </button>
+
+        <button
+          class="tab-button px-4 py-2 rounded-full text-sm font-semibold tracking-tight transition-all duration-200
+                 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10"
+          data-target="find_friends"
+          data-url="<%= find_friends_users_path %>">
+          Find People
+        </button>
       </div>
 
-      <div id="dashboard-content">
+      <!-- Content -->
+      <div id="dashboard-content" class="mt-4">
         <%= render template: "friends/index" %>
       </div>
     </section>
 
+    <!-- RIGHT PANEL -->
     <section class="lg:col-span-4" id="chat-window">
       <div class="card-main h-[70vh] flex items-center justify-center text-center">
         <p class="text-gray-500">Pick friend or group. Fire talk start.</p>
       </div>
     </section>
+
   </div>
 </div>
 
@@ -127,15 +128,15 @@
     $(document).off('click.dashboardTabs', '.tab-button').on('click.dashboardTabs', '.tab-button', function() {
       const $btn = $(this);
       const url = $btn.data('url');
-    
+
       $('.tab-button')
         .removeClass('bg-blue-500/10 text-blue-400 border border-blue-400/30 shadow-sm')
         .addClass('text-gray-400');
-    
+
       $btn
         .removeClass('text-gray-400')
         .addClass('bg-blue-500/10 text-blue-400 border border-blue-400/30 shadow-sm');
-    
+
       $('#dashboard-content').fadeOut(100, function() {
         $(this).load(url, function() {
           $(this).fadeIn(100);
