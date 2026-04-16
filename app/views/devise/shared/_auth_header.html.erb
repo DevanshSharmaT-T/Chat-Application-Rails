@@ -1,0 +1,39 @@
+<div class="flex items-center gap-3 mb-6">
+
+  <!-- Logo -->
+  <div class="text-2xl font-extrabold tracking-tight flex items-center">
+    <span class="text-blue-600">Chat</span>
+    <span class="text-white">App</span>
+  </div>
+
+  <!-- Bubble -->
+  <% if notice.present? %>
+    <div class="relative max-w-[200px] px-3 py-1.5 rounded-2xl bg-blue-500 text-white text-xs shadow-sm
+                before:content-[''] before:absolute before:left-[-6px] before:top-3
+                before:border-y-[6px] before:border-y-transparent before:border-r-[6px] before:border-r-blue-500">
+        <%= notice %>
+    </div>
+  <% elsif alert.present? %>
+    <div class="relative max-w-[200px] px-3 py-1.5 rounded-2xl bg-red-500/90 text-white text-xs shadow-sm
+              before:content-[''] before:absolute before:left-[-6px] before:top-3
+              before:border-y-[6px] before:border-y-transparent before:border-r-[6px] before:border-r-red-500">
+        <%= alert %>
+    </div>
+  <% elsif resource.errors.any? %>
+   <div class="relative max-w-[1000px] px-3 py-1.5 rounded-2xl bg-red-500/90 text-white text-xs shadow-sm
+            before:content-[''] before:absolute before:left-[-6px] before:top-3
+            before:border-y-[6px] before:border-y-transparent before:border-r-[6px] before:border-r-red-500">
+        <div id="error_explanation" data-turbo-temporary>
+            <h2>
+                <%= I18n.t("errors.messages.not_saved", count: resource.errors.count, resource: resource.class.model_name.human.downcase) %>
+            </h2>
+            <ul>
+                <% resource.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                <% end %>
+            </ul>
+        </div>
+   </div>
+  <% end %>
+
+</div>
