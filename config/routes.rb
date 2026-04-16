@@ -10,8 +10,10 @@ Rails.application.routes.draw do
     get :find_friends, on: :collection, as: :find_friends
   end
   
-  resources :friends, only: [:index, :create, :destroy, :update]
-  resources :groups, only: [:index, :show, :create]
+  resources :friends, only: [:index, :create, :destroy, :update] do
+    collection { get :requests }
+  end
+  resources :groups, only: [:index, :show, :create, :new]
   get "chats/:chat_id/messages", to: "messages#show", as: :chat_messages
   post "chats/:chat_id/messages", to: "messages#create"
     

@@ -1,0 +1,55 @@
+<%# THE group MAKER - Create Group page %>
+<div class="max-w-xl mx-auto p-6">
+  <div class="card-main">
+    <div class="mb-6 border-b border-gray-800 pb-4 flex items-center justify-between">
+      <h1 class="text-2xl font-bold text-blue-400">Create Group Chat</h1>
+      <%= link_to "← Back to Chat", dashboard_users_path, class: "text-sm text-gray-500 hover:text-blue-400 transition-colors" %>
+    </div>
+
+    <%= form_with model: @group, url: groups_path, method: :post, local: true, class: "space-y-5" do |f| %>
+      <div>
+        <%= f.label :name, "Group Name", class: "block text-sm font-medium text-gray-400 mb-1" %>
+        <%= f.text_field :name,
+            placeholder: "e.g. Rock Band, Dev Team...",
+            class: "w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 transition-all" %>
+      </div>
+
+      <div>
+        <%= f.label :description, "Description (optional)", class: "block text-sm font-medium text-gray-400 mb-1" %>
+        <%= f.text_area :description,
+            rows: 2,
+            placeholder: "What this group is about...",
+            class: "w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 transition-all resize-none" %>
+      </div>
+
+      <div>
+        <p class="block text-sm font-medium text-gray-400 mb-2">Add Group Members</p>
+        <p class="text-xs text-gray-600 mb-3">Only accepted friends can join group.</p>
+
+        <% if @accepted_friends.any? %>
+          <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
+            <% @accepted_friends.each do |friend| %>
+              <label class="flex items-center gap-3 bg-gray-950 border border-gray-800 rounded-xl p-3 cursor-pointer hover:border-blue-500/30 transition-all has-[:checked]:border-blue-500/50 has-[:checked]:bg-blue-900/10">
+                <input type="checkbox" name="member_ids[]" value="<%= friend.id %>"
+                       class="w-4 h-4 accent-blue-500">
+                <div class="avatar-circle w-8 h-8 text-sm"><%= friend.first_name.first.upcase %></div>
+                <div>
+                  <p class="text-sm font-medium text-gray-200"><%= friend.full_name %></p>
+                  <p class="text-xs text-gray-500"><%= friend.status.presence || "Friend" %></p>
+                </div>
+              </label>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center py-6 bg-gray-950 rounded-xl border border-dashed border-gray-800">
+            <p class="text-gray-500 text-sm">No accepted friends yet.</p>
+            <p class="text-xs text-gray-600 mt-1">Accept friend requests first, then make tribe.</p>
+          </div>
+        <% end %>
+      </div>
+
+      <%= f.submit "Create Group 🔥",
+          class: "w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold transition-colors cursor-pointer" %>
+    <% end %>
+  </div>
+</div>

@@ -45,12 +45,10 @@
 </div>
 
 <script nonce="<%= content_security_policy_nonce %>">
-  $(document).on('turbo:load', function() {
-    $('#user-search-input').off('keyup.findFriends').on('keyup.findFriends', function() {
-      const value = $(this).val().toLowerCase();
-      $('#possible-friends-grid .user-card').filter(function() {
-        $(this).toggle($(this).data('name').indexOf(value) > -1);
-      });
+  $('#user-search-input').off('keyup.findFriends').on('keyup.findFriends', function() {
+    var value = $(this).val().toLowerCase();
+    $('#possible-friends-grid .user-card').each(function() {
+      $(this).toggle($(this).data('name').indexOf(value) > -1);
     });
   });
 </script>

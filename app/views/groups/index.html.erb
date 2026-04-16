@@ -1,5 +1,5 @@
 <% if @groups_list.any? %>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div class="grid gap-4">
     <% @groups_list.each do |group| %>
       <div class="card-main group-row cursor-pointer hover:border-blue-500/40 transition-all" data-chat-id="<%= group.chat&.id %>" data-chat-type="Group">
         <div class="flex items-center gap-4">

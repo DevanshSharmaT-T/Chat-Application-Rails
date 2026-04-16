@@ -47,7 +47,7 @@ class User < ApplicationRecord
 
   validates_presence_of :first_name, :last_name, presence: true, length: { minimum: 1 }
 
-  scope :searchable, -> { where( status: [ :online, :invisible]) }
+  scope :searchable, -> { where(deleted_at: nil).where.not(role: :admin) }
   scope :possible_friends, ->(user) {
     friend_ids = Friend.where(user_id: user.id).select(:friend_user_id)
     inverse_friend_ids = Friend.where(friend_user_id: user.id).select(:user_id)
@@ -55,13 +55,11 @@ class User < ApplicationRecord
         .where.not(id: user.id)
         .where.not(id: friend_ids)
         .where.not(id: inverse_friend_ids)
-        .where(deleted_at: nil)
-        .where.not(role: :admin)
   }
   
   def appearance_for_friends
-      return "offline" if invisible? || offline?
-      "online"
+    return "offline" if status.blank? || status == "invisible" || status == "offline"
+    "online"
   end
   
   

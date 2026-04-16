@@ -1,14 +1,36 @@
-<div class="max-w-6xl mx-auto p-8">
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="mx-auto p-8 pb-4">
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
     <section class="lg:col-span-1 card-main">
-      <div class="mb-6 border-b border-gray-800 pb-4">
-        <h1 id="dashboard-title" class="text-2xl font-bold tracking-tight text-blue-500">Friends</h1>
-      </div>
+      <div>
+        
+          <div class="mb-6 border-b border-gray-800 pb-4 flex gap-2">
+            <button
+              class="tab-button px-4 py-2 rounded-full text-sm font-semibold tracking-tight transition-all duration-200
+                     bg-blue-500/10 text-blue-400 border border-blue-400/30 shadow-sm
+                     dashboard-tab-active"
+              data-target="friends"
+              data-url="<%= friends_path %>">
+              Friends
+            </button>
+          
+            <button
+              class="tab-button px-4 py-2 rounded-full text-sm font-semibold tracking-tight transition-all duration-200
+                     text-gray-400 hover:text-blue-400 hover:bg-blue-500/10"
+              data-target="groups"
+              data-url="<%= groups_path %>">
+              Groups
+            </button>
+          
+            <button
+              class="tab-button px-4 py-2 rounded-full text-sm font-semibold tracking-tight transition-all duration-200
+                     text-gray-400 hover:text-blue-400 hover:bg-blue-500/10"
+              data-target="find_friends"
+              data-url="<%= find_friends_users_path %>">
+              Find Friends
+            </button>
+          </div>
+          
 
-      <div class="flex flex-wrap gap-3 mb-6">
-        <button class="tab-button dashboard-tab nav-link dashboard-tab-active" data-target="friends" data-url="<%= friends_path %>">Friends</button>
-        <button class="tab-button dashboard-tab nav-link" data-target="groups" data-url="<%= groups_path %>">Groups</button>
-        <button class="tab-button dashboard-tab nav-link" data-target="find_friends" data-url="<%= find_friends_users_path %>">Find Friends</button>
       </div>
 
       <div id="dashboard-content">
@@ -16,7 +38,7 @@
       </div>
     </section>
 
-    <section class="lg:col-span-2" id="chat-window">
+    <section class="lg:col-span-4" id="chat-window">
       <div class="card-main h-[70vh] flex items-center justify-center text-center">
         <p class="text-gray-500">Pick friend or group. Fire talk start.</p>
       </div>
@@ -63,8 +85,25 @@
         const body = $('#chat-message-body').val().trim();
         if (!chatId || body.length === 0) return;
 
-        window.ChatRealtime?.send(chatId, body);
-        $('#chat-message-body').val('');
+        const $input = $('#chat-message-body');
+        const $btn = $(this).find('[type="submit"]');
+        $btn.prop('disabled', true);
+
+        $.ajax({
+          url: '/chats/' + chatId + '/messages',
+          method: 'POST',
+          data: { message: { body: body }, authenticity_token: $('meta[name="csrf-token"]').attr('content') },
+          success: function() {
+            $input.val('');
+          },
+          error: function(xhr) {
+            alert('Cannot send! ' + (xhr.responseJSON?.errors || 'Unknown error'));
+          },
+          complete: function() {
+            $btn.prop('disabled', false);
+            $input.focus();
+          }
+        });
       });
     }
 
@@ -88,11 +127,15 @@
     $(document).off('click.dashboardTabs', '.tab-button').on('click.dashboardTabs', '.tab-button', function() {
       const $btn = $(this);
       const url = $btn.data('url');
-
-      $('.tab-button').removeClass('dashboard-tab-active');
-      $btn.addClass('dashboard-tab-active');
-      $('#dashboard-title').text($btn.text());
-
+    
+      $('.tab-button')
+        .removeClass('bg-blue-500/10 text-blue-400 border border-blue-400/30 shadow-sm')
+        .addClass('text-gray-400');
+    
+      $btn
+        .removeClass('text-gray-400')
+        .addClass('bg-blue-500/10 text-blue-400 border border-blue-400/30 shadow-sm');
+    
       $('#dashboard-content').fadeOut(100, function() {
         $(this).load(url, function() {
           $(this).fadeIn(100);
