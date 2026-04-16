@@ -21,8 +21,8 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" nonce="<%= content_security_policy_nonce %>"></script>
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :application, "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag :tailwind, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag :application, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
@@ -41,52 +41,64 @@
                 <span class="text-gray-100 hover:text-blue-600">App</span>
               <% end %>
 
-            <div class="relative">
-              <button
-                id="profile-dropdown-toggle"
-                type="button"
-                class="flex items-center gap-3 px-3 py-2 rounded-lg border border-blue-200 bg-white/5 hover:bg-white/10 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
-              >
-                <div class="avatar-circle w-10 h-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 font-semibold border border-blue-200">
-                  <%= current_user.first_name.to_s.first&.upcase || current_user.email.to_s.first&.upcase %>
-                </div>
-            
-                <div class="text-left leading-tight">
-                  <p class="text-sm font-medium text-white">
-                    <%= current_user.full_name %>
-                  </p>
-                  <p class="text-xs text-gray-400">
-                    <%= current_user.status.presence || "Offline" %>
-                  </p>
-                </div>
-              </button>
-
-              <div id="profile-dropdown-menu" class="dropdown-menu hidden" style="position:absolute;right:0;top:calc(100% + 8px);z-index:9999;min-width:220px;">
-                <div class="py-2 px-1">
-
-                  <%# Pending badge — quick count %>
-                  <% pending_count = @pending_requests&.count || 0 %>
-
-                  <%= link_to requests_friends_path, class: "flex items-center justify-between px-3 py-2.5 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors" do %>
-                    <span>Requests</span>
-                    <% if pending_count > 0 %>
-                      <span class="bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full"><%= pending_count %></span>
+              <div class="relative">
+                <button
+                  id="profile-dropdown-toggle"
+                  type="button"
+                  class="flex items-center gap-3 px-3 py-2 rounded-lg border border-blue-200 bg-white/5 hover:bg-white/10 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                >
+                  <div class="avatar-circle w-10 h-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 font-semibold border border-blue-200">
+                    <%= current_user.first_name.to_s.first&.upcase || current_user.email.to_s.first&.upcase %>
+                  </div>
+              
+                  <div class="text-left leading-tight">
+                    <p class="text-sm font-medium text-white">
+                      <%= current_user.full_name %>
+                    </p>
+                    <p class="text-xs text-gray-400">
+                      <%= current_user.status.presence || "Offline" %>
+                    </p>
+                  </div>
+                </button>
+              
+                <!-- ✅ Improved Dropdown -->
+                <div
+                  id="profile-dropdown-menu"
+                  class="dropdown-menu hidden absolute right-0 mt-2 w-56 rounded-2xl bg-gray-900 border border-gray-700 shadow-xl backdrop-blur-md z-50"
+                >
+                  <div class="py-2 px-1">
+              
+                    <% pending_count = @pending_requests&.count || 0 %>
+              
+                    <%= link_to requests_friends_path, class: "flex items-center justify-between px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors" do %>
+                      <span>Requests</span>
+                      <% if pending_count > 0 %>
+                        <span class="bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                          <%= pending_count %>
+                        </span>
+                      <% end %>
                     <% end %>
-                  <% end %>
-
-                  <%= link_to new_group_path, class: "flex items-center px-3 py-2.5 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors" do %>
-                    <span>Create Group</span>
-                  <% end %>
-
-                  <%= link_to "View Profile", user_path(current_user), class: "flex items-center px-3 py-2.5 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors" %>
-
-                  <div class="border-t border-gray-800 my-1"></div>
-
-                  <%= button_to "Sign Out", destroy_user_session_path, method: :delete,
-                        class: "flex items-center w-full text-left px-3 py-2.5 text-sm text-red-400 hover:bg-red-900/20 rounded-lg transition-colors bg-transparent border-none cursor-pointer" %>
+              
+                    <%= link_to new_group_path, class: "flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors" do %>
+                      <span>Create Group</span>
+                    <% end %>
+              
+                    <%= link_to "View Profile",
+                      user_path(current_user),
+                      class: "flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors"
+                    %>
+              
+                    <div class="border-t border-gray-700 my-1"></div>
+              
+                    <%= button_to "Sign Out",
+                      destroy_user_session_path,
+                      method: :delete,
+                      class: "flex items-center w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-900/20 rounded-lg transition-colors bg-transparent border-none cursor-pointer"
+                    %>
+              
+                  </div>
                 </div>
               </div>
-            </div>
           </div>
         </header>
       <% end %>
