@@ -24,6 +24,10 @@
 #  index_messages_on_metadata_gin        (metadata) USING gin
 #  index_messages_on_reply_to_id         (reply_to_id)
 #  index_messages_on_user_id             (user_id)
+#  index_messages_on_chat_id     (chat_id)
+#  index_messages_on_deleted_at  (deleted_at)
+#  index_messages_on_id          (id)
+#  index_messages_on_user_id     (user_id)
 #
 # Foreign Keys
 #

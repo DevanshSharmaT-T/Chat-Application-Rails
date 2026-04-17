@@ -1,4 +1,4 @@
-<% mine = message.user_id == current_user.id %>
+<% mine = current_user&.persisted? && (message.user_id == current_user.id) %>
 
 <div class="flex <%= mine ? 'justify-end' : 'justify-start' %> mb-3" data-message-id="<%= message.id %>">
   <div class="
