@@ -80,25 +80,33 @@
     }
 
     function bindMessageForm() {
-      $('#chat-window').off('submit.chatForm', '#chat-message-form').on('submit.chatForm', '#chat-message-form', function(event) {
+      $('#chat-window').off('submit.chatForm').on('submit.chatForm', '#chat-message-form', function(event) {
         event.preventDefault();
-        const chatId = $('#active-chat-window').data('chat-id');
-        const body = $('#chat-message-body').val().trim();
+        const $form = $(this);
+        const chatId = $form.find('input[name="chat_id"]').val(); 
+        const $input = $('#chat-message-body');
+        const body = $input.val().trim();
+
         if (!chatId || body.length === 0) return;
 
-        const $input = $('#chat-message-body');
-        const $btn = $(this).find('[type="submit"]');
+        const $btn = $form.find('[type="submit"]');
         $btn.prop('disabled', true);
 
         $.ajax({
-          url: '/chats/' + chatId + '/messages',
+          url: $form.attr('action'),
           method: 'POST',
-          data: { message: { body: body }, authenticity_token: $('meta[name="csrf-token"]').attr('content') },
-          success: function() {
+          dataType: 'json',
+          headers: {
+            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
+            'Accept': 'application/json'
+          },
+          data: $form.serialize(), 
+          success: function(response) {
             $input.val('');
           },
           error: function(xhr) {
-            alert('Cannot send! ' + (xhr.responseJSON?.errors || 'Unknown error'));
+            console.error("Submission error:", xhr.responseText);
+            alert('Cannot send! Check console.');
           },
           complete: function() {
             $btn.prop('disabled', false);
@@ -108,19 +116,53 @@
       });
     }
 
+    // --- REVERSE INFINITE SCROLL ---
+    function bindInfiniteScroll() {
+      const $container = $('#messages-scroll-container');
+      
+      $container.off('scroll.infinite').on('scroll.infinite', function() {
+        if ($(this).scrollTop() < 50) { // Trigger near top
+          const $loadLink = $('.older-messages-link');
+          if ($loadLink.length && !window.isLoadingOlder) {
+            window.isLoadingOlder = true;
+            
+            // Record height before load to maintain scroll position
+            const oldHeight = $container.prop('scrollHeight');
+            const url = $loadLink.attr('href');
+ 
+            $.get(url, function(html) {
+              const $payload = $('<div>').html(html);
+              const $batch = $payload.find('#older-messages-batch').children();
+              const $nextLink = $payload.find('#older-next-link').html();
+ 
+              $('#messages-list').prepend($batch);
+              $('#history-loader').html($nextLink);
+              
+              // Maintain scroll position (WhatsApp style)
+              const newHeight = $container.prop('scrollHeight');
+              $container.scrollTop(newHeight - oldHeight);
+              
+              bootTimeago();
+              window.isLoadingOlder = false;
+            });
+          }
+        }
+      });
+    }
+ 
     function bindConversationRows() {
       $('#dashboard-content').off('click.chatLoad', '.friend-row, .group-row').on('click.chatLoad', '.friend-row, .group-row', function() {
         const chatId = $(this).data('chat-id');
         const chatType = $(this).data('chat-type');
         if (!chatId) return;
-
+ 
         window.activeChatType = chatType;
         $('#chat-window').load('/chats/' + chatId + '/messages', function() {
-          window.ChatRealtime?.subscribe(chatId);
+          window.ChatRealtime.subscribe(chatId);
           bootTimeago();
           scrollToBottom();
-          bindOlderMessages();
           bindMessageForm();
+          bindInfiniteScroll(); // Setup the scroll listener
         });
       });
     }

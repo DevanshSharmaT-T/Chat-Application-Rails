@@ -27,12 +27,19 @@ class FriendsController < ApplicationController
 
   def update
     @friend = Friend.find(params[:id])
-    if @friend.friend_user_id == current_user.id && @friend.update(status: params[:friend][:status])
-      redirect_to requests_friends_path, notice: "Request accepted! You can now chat."
+    if @friend.friend_user_id == current_user.id && @friend.update(friend_params)
+      redirect_back fallback_location: dashboard_users_path, notice: "Request accepted! You can now chat."
     else
-      redirect_to requests_friends_path, alert: "Cannot accept this request."
+      redirect_back fallback_location: requests_friends_path, alert: "Cannot accept this request."
     end
   end
+
+  private
+
+  def friend_params
+    params.require(:friend).permit(:status)
+  end
+
 
   def destroy
     @friend = Friend.find(params[:id])

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_15_090939) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_17_081546) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -69,7 +69,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_15_090939) do
     t.uuid "user_id", null: false
     t.index ["chat_id"], name: "index_messages_on_chat_id"
     t.index ["deleted_at"], name: "index_messages_on_deleted_at"
+    t.index ["id"], name: "index_messages_on_id"
     t.index ["user_id"], name: "index_messages_on_user_id"
+  end
+
+  create_table "solid_cable_messages", force: :cascade do |t|
+    t.binary "channel", null: false
+    t.bigint "channel_hash", null: false
+    t.datetime "created_at", null: false
+    t.binary "payload", null: false
+    t.index ["channel_hash", "id"], name: "index_solid_cable_messages_on_channel_hash_and_id"
+    t.index ["created_at"], name: "index_solid_cable_messages_on_created_at"
+    t.index ["id"], name: "index_solid_cable_messages_on_id", unique: true
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

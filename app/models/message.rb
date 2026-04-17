@@ -14,6 +14,7 @@
 #
 #  index_messages_on_chat_id     (chat_id)
 #  index_messages_on_deleted_at  (deleted_at)
+#  index_messages_on_id          (id)
 #  index_messages_on_user_id     (user_id)
 #
 # Foreign Keys
@@ -24,6 +25,7 @@
 class Message < ApplicationRecord
 
   acts_as_paranoid
+  self.primary_key = :id
 
   belongs_to :user
   belongs_to :chat
@@ -35,12 +37,16 @@ class Message < ApplicationRecord
   private
 
   def broadcast_message
-    payload_json = ApplicationController.render(
-      template: "messages/message",
-      formats: [ :json ],
-      assigns: { message: self }
+    html = ApplicationController.render(
+      partial: 'messages/message_bubble',
+      locals: { message: self, current_user: nil } # current_user is nil in broadcast, JS flips it
     )
 
-    ActionCable.server.broadcast("chat_#{chat_id}", JSON.parse(payload_json))
+    ActionCable.server.broadcast("chat_#{chat_id}", {
+      html: html,
+      user_id: user_id,
+      chat_id: chat_id
+    })
   end
+
 end

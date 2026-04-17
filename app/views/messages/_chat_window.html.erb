@@ -27,10 +27,15 @@
         <p class="text-xs text-gray-500 mt-1">Friend must approve before talk start.</p>
       </div>
     <% else %>
-      <form id="chat-message-form" class="flex items-center gap-2">
+    <form id="chat-message-form"
+                action="<%= chat_messages_path(chat_id: chat.id) %>"
+                method="POST"
+                data-remote="true"
+                class="flex items-center gap-2">
+            <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
         <input type="hidden" name="chat_id" value="<%= chat.id %>">
         <button type="button" id="emoji-toggle" class="nav-link px-2 py-1 border border-gray-800 rounded-lg transition-colors hover:bg-gray-800">😀</button>
-        <input type="text" name="body" id="chat-message-body" class="form-input !py-2 w-full bg-gray-900 border border-gray-800 rounded-lg text-gray-200 px-3 focus:outline-none focus:border-blue-500 transition-colors" placeholder="Type message..." autocomplete="off">
+        <input type="text" name="message[body]" id="chat-message-body" class="form-input !py-2 w-full bg-gray-900 border border-gray-800 rounded-lg text-gray-200 px-3 focus:outline-none focus:border-blue-500 transition-colors" placeholder="Type message..." autocomplete="off">
         <button type="submit" class="btn-primary bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-medium transition-colors">Send</button>
       </form>
     <% end %>
