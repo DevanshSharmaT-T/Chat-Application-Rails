@@ -23,7 +23,15 @@ class MessagesController < ApplicationController
     @message = @chat.messages.build(message_params.merge(user: current_user))
 
     if @message.save
-      render :message, formats: [ :json ], status: :created
+      render json: {
+        id: @message.id,
+        body: @message.body,
+        chat_id: @message.chat_id,
+        user_id: @message.user_id,
+        user_name: current_user.full_name,
+        created_at: @message.created_at.iso8601,
+        time_ago: "less than a minute"
+      }, status: :created
     else
       render json: { errors: @message.errors.full_messages }, status: :unprocessable_entity
     end
