@@ -37,17 +37,16 @@ class Message < ApplicationRecord
   private
 
   def broadcast_message
-    msg_user = user || User.find(user_id)
+    html = ApplicationController.render(
+      partial: 'messages/message_bubble',
+      locals: { message: self, current_user: nil } # current_user is nil in broadcast, JS flips it
+    )
 
-    payload = {
-      id: id,
-      body: body,
-      chat_id: chat_id,
+    ActionCable.server.broadcast("chat_#{chat_id}", {
+      html: html,
       user_id: user_id,
-      user_name: msg_user.full_name,
-      created_at: created_at.iso8601,
-      time_ago: "less than a minute"
-    }
-    ActionCable.server.broadcast("chat_#{chat_id}", payload)
+      chat_id: chat_id
+    })
   end
+
 end

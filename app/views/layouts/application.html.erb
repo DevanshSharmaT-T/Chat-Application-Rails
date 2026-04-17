@@ -86,36 +86,68 @@
           
                 <div
                   id="profile-dropdown-menu"
-                  class="dropdown-menu hidden absolute right-0 mt-2 w-56 rounded-2xl bg-gray-900 border border-gray-700 shadow-xl backdrop-blur-md z-50"
+                  class="dropdown-menu hidden absolute right-0 mt-2 w-72 rounded-2xl bg-gray-900 border border-gray-700 shadow-xl backdrop-blur-md z-50 overflow-hidden"
                 >
                   <div class="py-2 px-1">
-                    <% pending_count = @pending_requests&.count || 0 %>
-          
-                    <%= link_to requests_friends_path, class: "flex items-center justify-between px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors" do %>
-                      <span>Requests</span>
-                      <% if pending_count > 0 %>
-                        <span class="bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                          <%= pending_count %>
-                        </span>
-                      <% end %>
+                    <div class="px-3 py-2 border-b border-gray-800 mb-1">
+                      <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Account</p>
+                    </div>
+
+                    <%= link_to user_path(current_user), class: "flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors" do %>
+                      <i class="material-icons text-sm mr-2 text-blue-400">person</i>
+                      <span>View Profile</span>
                     <% end %>
-          
+
                     <%= link_to new_group_path, class: "flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors" do %>
+                      <i class="material-icons text-sm mr-2 text-green-400">group_add</i>
                       <span>Create Group</span>
                     <% end %>
-          
-                    <%= link_to "View Profile",
-                      user_path(current_user),
-                      class: "flex items-center px-3 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors"
-                    %>
-          
-                    <div class="border-t border-gray-700 my-1"></div>
-          
-                    <%= button_to "Sign Out",
-                      destroy_user_session_path,
+
+                    <div class="border-t border-gray-800 my-1"></div>
+
+                    <div class="px-3 py-2 border-b border-gray-800 mb-1">
+                      <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Pending Approvals</p>
+                    </div>
+
+                    <% if @pending_requests.any? %>
+                      <div class="max-h-48 overflow-y-auto">
+                        <% @pending_requests.each do |req| %>
+                          <div class="px-3 py-3 border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors">
+                            <div class="flex items-center gap-3 mb-2">
+                              <div class="w-8 h-8 rounded-full bg-blue-900/30 flex items-center justify-center text-xs font-bold text-blue-400">
+                                <%= req.user.first_name[0] %>
+                              </div>
+                              <span class="text-sm font-medium text-gray-200"><%= req.user.full_name %></span>
+                            </div>
+                            <div class="flex gap-2">
+                              <%= button_to friend_path(req, friend: { status: 'accepted' }), method: :patch, class: "flex-1 text-[10px] bg-blue-600 hover:bg-blue-500 text-white py-1.5 rounded-md transition-colors font-semibold" do %>
+                                Approve
+                              <% end %>
+                              <%= button_to friend_path(req), method: :delete, class: "flex-1 text-[10px] bg-gray-800 hover:bg-red-900/40 text-red-400 border border-red-900/30 py-1.5 rounded-md transition-colors font-semibold" do %>
+                                Skip
+                              <% end %>
+                            </div>
+                          </div>
+                        <% end %>
+                      </div>
+                    <% else %>
+                      <div class="px-3 py-4 text-center">
+                        <p class="text-xs text-gray-600">No pending handshakes</p>
+                      </div>
+                    <% end %>
+
+                    <%= link_to requests_friends_path, class: "block text-center py-2 text-[11px] text-blue-400 hover:text-blue-300 hover:underline" do %>
+                      Manage all requests
+                    <% end %>
+
+                    <div class="border-t border-gray-800 my-1"></div>
+
+                    <%= button_to destroy_user_session_path,
                       method: :delete,
-                      class: "flex items-center w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-900/20 rounded-lg transition-colors bg-transparent border-none cursor-pointer"
-                    %>
+                      class: "flex items-center w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-900/20 rounded-lg transition-colors bg-transparent border-none cursor-pointer" do %>
+                      <i class="material-icons text-sm mr-2">logout</i>
+                      <span>Sign Out</span>
+                    <% end %>
                   </div>
                 </div>
               </div>
@@ -132,7 +164,6 @@
       $(document).off('click', '#profile-dropdown-toggle').on('click', '#profile-dropdown-toggle', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log("Chief click head!"); // Look in console for this!
         $('#profile-dropdown-menu').toggleClass('hidden');
       });
       

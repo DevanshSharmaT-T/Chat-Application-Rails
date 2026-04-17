@@ -8,14 +8,19 @@ class MessagesController < ApplicationController
     @messages = messages_scope.to_a.reverse
     @next_page = messages_scope.next_page
 
-    if request.xhr?
-      if params[:prepend].present?
-        render partial: "messages/history_messages", locals: { messages: @messages, next_page: @next_page }
-      else
-        render partial: "messages/chat_window", locals: { chat: @chat, messages: @messages, next_page: @next_page }
+    respond_to do |format|
+      format.html do
+        if request.xhr?
+          if params[:prepend].present?
+            render partial: "messages/history_messages", locals: { messages: @messages, next_page: @next_page }
+          else
+            render partial: "messages/chat_window", locals: { chat: @chat, messages: @messages, next_page: @next_page }
+          end
+        else
+          redirect_to dashboard_users_path
+        end
       end
-    else
-      redirect_to dashboard_users_path
+      format.json { render json: @messages }
     end
   end
 
@@ -23,19 +28,19 @@ class MessagesController < ApplicationController
     @message = @chat.messages.build(message_params.merge(user: current_user))
 
     if @message.save
-      render json: {
-        id: @message.id,
-        body: @message.body,
-        chat_id: @message.chat_id,
-        user_id: @message.user_id,
-        user_name: current_user.full_name,
-        created_at: @message.created_at.iso8601,
-        time_ago: "less than a minute"
+      render json: { 
+        status: 'success', 
+        message: @message, 
+        html: ApplicationController.render(
+          partial: 'messages/message_bubble',
+          locals: { message: @message, current_user: current_user }
+        )
       }, status: :created
     else
       render json: { errors: @message.errors.full_messages }, status: :unprocessable_entity
     end
   end
+
 
   private
 
