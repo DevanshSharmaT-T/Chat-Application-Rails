@@ -240,8 +240,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_16_000015) do
   add_foreign_key "chats", "messages", column: "last_message_id"
   add_foreign_key "device_tokens", "users"
   add_foreign_key "friendships", "users", column: "addressee_id"
-  add_foreign_key "friendships", "users", column: "addressee_id"
-  add_foreign_key "friendships", "users", column: "requester_id"
   add_foreign_key "friendships", "users", column: "requester_id"
   add_foreign_key "group_members", "groups"
   add_foreign_key "group_members", "users"

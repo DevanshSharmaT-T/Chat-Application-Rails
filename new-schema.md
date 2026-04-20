@@ -122,7 +122,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_16_000001) do
   end
 
   # ─── CHATS ────────────────────────────────────────────────────────────────
-  # chat_type — 0:direct 1:group 2:broadcast
+  # chat_type — 0:direct_message 1:group_chat 2:broadcast_group
   # chatable polymorphic → Friendship (DM) or Group
   create_table "chats", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string   "chat_name"

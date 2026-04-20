@@ -4,7 +4,7 @@
 #
 #  id               :uuid             not null, primary key
 #  chat_name        :string
-#  chat_type        :integer          default("direct")
+#  chat_type        :integer          default("direct_message")
 #  chatable_type    :string           not null
 #  deleted_at       :datetime
 #  description      :text

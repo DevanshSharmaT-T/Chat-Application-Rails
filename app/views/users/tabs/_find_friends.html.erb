@@ -12,37 +12,47 @@
   </div>
 
   <% if @possible_friends_list.any? %>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="possible-friends-grid">
+    <div class="grid grid-cols-1 gap-4" id="possible-friends-grid">
       <% @possible_friends_list.each do |user| %>
-        <div class="user-card bg-gray-900 border border-gray-800 rounded-2xl p-6 flex flex-col items-center text-center hover:border-blue-500/30 transition-all group" 
+        <div class="user-card bg-brand-surface border border-brand-border rounded-xl p-4 flex items-center justify-between hover:border-brand-primary/40 transition-all group" 
              data-name="<%= user.full_name.downcase %>">
           
-          <div class="w-20 h-20 bg-blue-900/20 text-blue-400 rounded-full flex items-center justify-center text-2xl font-bold mb-4 group-hover:scale-105 transition-transform">
-            <%= user.first_name[0] %>
+          <%# Left side: Avatar + Name/Status column %>
+          <div class="flex items-center gap-4">
+            <%# Small Circle Avatar %>
+            <div class="w-12 h-12 flex-shrink-0 bg-brand-primary/10 text-brand-primary rounded-full flex items-center justify-center text-xl font-bold group-hover:scale-105 transition-transform">
+              <%= user.first_name[0] %>
+            </div>
+  
+            <%# Words %>
+            <div class="text-left">
+              <h3 class="text-sm font-bold text-white"><%= user.full_name %></h3>
+              <p class="text-xs text-slate-500 truncate max-w-[150px] md:max-w-[200px]">
+                <%= user.status.presence || "Hey there!" %>
+              </p>
+            </div>
           </div>
-
-          <h3 class="text-lg font-semibold text-white mb-1"><%= user.full_name %></h3>
-          <p class="text-sm text-gray-500 mb-6 line-clamp-2 min-h-[40px]">
-            <%= user.status.presence || "Hey there! I'm using Chat." %>
-          </p>
-
-          <%= button_to friends_path(friend_user_id: user.id), 
-                        method: :post, 
-                        class: "w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2" do %>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Add Friend
-          <% end %>
+  
+          <%# Right side: The Action %>
+          <div class="flex-shrink-0">
+            <%# Me use addressee_id for new schema! %>
+            <%= button_to friends_path(addressee_id: user.id), 
+                          method: :post, 
+                          class: "p-2 bg-slate-800 hover:bg-brand-primary text-slate-300 hover:text-white rounded-lg transition-all" do %>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+            <% end %>
+          </div>
+          
         </div>
       <% end %>
     </div>
   <% else %>
-  <div class="flex flex-col justify-center items-center min-h-[60vh] bg-gray-900/50 rounded-2xl border border-dashed border-gray-800">
-    <p class="text-gray-500">No new people to find right now.</p>
-  </div>
+    <div class="flex flex-col justify-center items-center min-h-[40vh] bg-brand-surface/50 rounded-2xl border border-dashed border-brand-border">
+      <p class="text-slate-500">Tribe is full. No more strangers to find.</p>
+    </div>
   <% end %>
-</div>
 
 <script nonce="<%= content_security_policy_nonce %>">
   $('#user-search-input').off('keyup.findFriends').on('keyup.findFriends', function() {

@@ -1,8 +1,8 @@
 class AddForeignKeysForMigration < ActiveRecord::Migration[8.1]
   def change
     add_foreign_key "device_tokens",     "users"
-    add_foreign_key "friendships",       "users", column: "requester_id"
-    add_foreign_key "friendships",       "users", column: "addressee_id"
+    # add_foreign_key "friendships",       "users", column: "requester_id"
+    # add_foreign_key "friendships",       "users", column: "addressee_id"
     add_foreign_key "blocked_users",     "users", column: "blocker_id"
     add_foreign_key "blocked_users",     "users", column: "blocked_id"
     

@@ -21,8 +21,6 @@
 # Foreign Keys
 #
 #  fk_rails_...  (addressee_id => users.id)
-#  fk_rails_...  (addressee_id => users.id)
-#  fk_rails_...  (requester_id => users.id)
 #  fk_rails_...  (requester_id => users.id)
 #
 class Friendship < ApplicationRecord
@@ -37,6 +35,10 @@ class Friendship < ApplicationRecord
   validates :requester_id, uniqueness: { scope: :addressee_id, conditions: -> { where(deleted_at: nil) } }
 
   after_create :create_dm
+
+  scope :pending_requests, ->(user) { where(status: :pending, addressee_id: user.id) }
+  scope :sent_requests, ->(user) { where(status: :pending, requester_id: user.id) }
+  scope :accepted_friendships, ->(user) { where(status: :accepted).where("requester_id = ? OR addressee_id = ?", user.id, user.id) }
 
   private
 

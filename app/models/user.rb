@@ -55,6 +55,10 @@ class User < ApplicationRecord
   # Associations - Friendships
   has_many :sent_friendships, class_name: "Friendship", foreign_key: :requester_id, dependent: :destroy
   has_many :received_friendships, class_name: "Friendship", foreign_key: :addressee_id, dependent: :destroy
+  has_many :added_friends, -> { where(friendships: { status: :accepted }) }, 
+             through: :sent_friendships, source: :addressee
+  has_many :adding_friends, -> { where(friendships: { status: :accepted }) }, 
+             through: :received_friendships, source: :requester
 
   # Associations - Groups
   has_many :owned_groups, class_name: "Group", foreign_key: :created_by_id, dependent: :destroy
@@ -74,7 +78,7 @@ class User < ApplicationRecord
 
   # Validations
   validates :first_name, :last_name, :username, presence: true
-  validates :username, uniqueness: true
+  validates :username, uniqueness: true, presence: true
 
   # Scopes
   scope :searchable, -> { where(deleted_at: nil).where.not(role: :admin) }
@@ -82,7 +86,11 @@ class User < ApplicationRecord
   def full_name
     [first_name, middle_name, last_name].compact.join(" ")
   end
-  
+
+  def friends
+    User.where(id: added_friends.select(:id)).or(User.where(id: adding_friends.select(:id)))
+  end
+
   def appearance_for_friends
     return "offline" if online_status_offline? || status == "invisible"
     "online"

@@ -36,5 +36,5 @@ class Chat < ApplicationRecord
   has_many :users, through: :participants
   has_many :pinned_messages, dependent: :destroy
 
-  enum :chat_type, { direct: 0, group: 1, broadcast: 2 }
+  enum :chat_type, { direct_message: 0, group_chat: 1, broadcast_group: 2 }
 end
