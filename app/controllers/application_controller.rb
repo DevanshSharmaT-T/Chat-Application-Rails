@@ -13,13 +13,15 @@ class ApplicationController < ActionController::Base
   private
 
   def fetch_pending_requests
-    @pending_requests = Friend.where(friend_user_id: current_user.id, status: 'pending')
+    @pending_requests = Friendship.where(addressee_id: current_user.id, status: :pending)
   end
 
   def configure_permitted_parameters
-      permitted_attributes = [ :first_name, :middle_name, :last_name, :status ]
+      permitted_attributes = [ :first_name, :middle_name, :last_name, :username, :status ]
 
       devise_parameter_sanitizer.permit(:sign_up, keys: permitted_attributes)
       devise_parameter_sanitizer.permit(:account_update, keys: permitted_attributes)
   end
+
+
 end

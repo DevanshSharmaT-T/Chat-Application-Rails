@@ -6,7 +6,8 @@
 #
 default: &default
   adapter: postgresql
-  database: chatapp 
+  # database: chatapp 
+  database: chatapptesting
   host: localhost
   username: postgres
   password: password

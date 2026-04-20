@@ -3,20 +3,17 @@ class UsersController < ApplicationController
   before_action :set_user, only: :show
   
   def dashboard
-    friend_ids = Friend.where(user_id: current_user.id).select(:friend_user_id)
-    inverse_ids = Friend.where(friend_user_id: current_user.id).select(:user_id)
-    @friends_list = User.where(id: friend_ids).or(User.where(id: inverse_ids))
+    @friends_list = current_user.friends
   end
 
 
   def find_friends
-    @possible_friends_list = User.possible_friends(current_user)
+    @possible_friends_list = User.searchable.where.not(id: current_user.id)
+
     if request.xhr?
       render partial: "users/tabs/find_friends", layout: false
     else
-      friend_ids = Friend.where(user_id: current_user.id).select(:friend_user_id)
-      inverse_ids = Friend.where(friend_user_id: current_user.id).select(:user_id)
-      @friends_list = User.where(id: friend_ids).or(User.where(id: inverse_ids))
+      dashboard
       render :dashboard
     end
   end

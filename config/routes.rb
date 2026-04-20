@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     collection { get :requests }
   end
   resources :groups, only: [:index, :show, :create, :new]
+  resources :friendship, only: [:update, :destroy]
   get "chats/:chat_id/messages", to: "messages#show", as: :chat_messages
   post "chats/:chat_id/messages", to: "messages#create"
     

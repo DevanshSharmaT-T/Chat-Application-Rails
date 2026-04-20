@@ -9,14 +9,12 @@ class FriendsController < ApplicationController
   end
 
   def requests
-    @pending_received = Friend.includes(:user)
-                              .where(friend_user_id: current_user.id, status: :pending)
-    @pending_sent = Friend.includes(:friend_user)
-                          .where(user_id: current_user.id, status: :pending)
+    @pending_received = current_user.received_friendships.pending
+    @pending_sent = current_user.sent_friendships.pending
   end
 
   def create
-    @friendship = current_user.friendships.build(friend_user_id: params[:friend_user_id])
+    @friendship = current_user.sent_friendships.build(addressee_id: params[:addressee_id])
 
     if @friendship.save
       redirect_to dashboard_users_path, notice: "Friend request sent!"
@@ -26,28 +24,31 @@ class FriendsController < ApplicationController
   end
 
   def update
-    @friend = Friend.find(params[:id])
-    if @friend.friend_user_id == current_user.id && @friend.update(friend_params)
-      redirect_back fallback_location: dashboard_users_path, notice: "Request accepted! You can now chat."
+    @friendship = Friendship.find(params[:id])
+
+    if @friendship.addressee_id == current_user.id && @friendship.update(friendship_params)
+      @friendship.update(accepted_at: Time.current) if @friendship.accepted?
+
+      redirect_back fallback_location: dashboard_users_path, notice: "Request updated!"
     else
-      redirect_back fallback_location: requests_friends_path, alert: "Cannot accept this request."
+      redirect_back fallback_location: requests_friends_path, alert: "Cannot do that."
+    end
+  end
+
+
+  def destroy
+    @friendship = Friendship.find(params[:id])
+    if @friendship.requester_id == current_user.id || @friendship.addressee_id == current_user.id
+      @friendship.destroy
+      redirect_to requests_friends_path, notice: "Friendship ended."
+    else
+      redirect_to requests_friends_path, alert: "Not your business."
     end
   end
 
   private
 
-  def friend_params
-    params.require(:friend).permit(:status)
-  end
-
-
-  def destroy
-    @friend = Friend.find(params[:id])
-    if @friend.user_id == current_user.id || @friend.friend_user_id == current_user.id
-      @friend.destroy
-      redirect_to requests_friends_path, notice: "Request removed."
-    else
-      redirect_to requests_friends_path, alert: "Cannot remove this."
-    end
+  def friendship_params
+    params.require(:friendship).permit(:status)
   end
 end

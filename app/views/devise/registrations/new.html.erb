@@ -7,8 +7,7 @@
 
   <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-4" }) do |f| %>
 
-    
-
+    <%# --- Name Row --- %>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div>
         <%= f.label :first_name, class: "block text-sm font-medium text-slate-400 mb-1" %>
@@ -26,16 +25,25 @@
       </div>
     </div>
 
+    <%# --- Identity Row --- %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <%= f.label :username, class: "block text-sm font-medium text-slate-400 mb-1" %>
+        <%= f.text_field :username, required: true, placeholder: "@handle", class: "form-input" %>
+     </div>
+
     <div>
       <%= f.label :email, class: "block text-sm font-medium text-slate-400 mb-1" %>
       <%= f.email_field :email, autocomplete: "email", class: "form-input" %>
+      </div>
     </div>
 
     <div>
-      <%= f.label :status, class: "block text-sm font-medium text-slate-400 mb-1" %>
-      <%= f.text_area :status, placeholder: "Bio or status message...", class: "form-input h-20" %>
+      <%= f.label :status, "Bio / Status", class: "block text-sm font-medium text-slate-400 mb-1" %>
+      <%= f.text_area :status, placeholder: "What are you thinking?", class: "form-input h-20" %>
     </div>
 
+    <%# --- Password Row --- %>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <%= f.label :password, class: "block text-sm font-medium text-slate-400 mb-1" %>
