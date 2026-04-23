@@ -2,13 +2,10 @@
 @import "./background.css";
 
 @theme {
-  /* Brand Colors */
   --color-brand-dark: #020617;
   --color-brand-surface: #0f172a;
   --color-brand-primary: #3b82f6;
   --color-brand-border: #1e293b;
-
-  /* Font */
   --font-sans: "Inter", "system-ui", "sans-serif";
 }
 
@@ -19,13 +16,274 @@
 }
 
 @layer components {
+
+  /* ─────────────────────────────────────────────
+     CORE LAYOUT
+  ───────────────────────────────────────────── */
+
+  /* Base card surface used throughout the app */
+  .card-main {
+    @apply bg-transparent border border-brand-border rounded-2xl p-6 backdrop-blur-sm;
+  }
+
+  /* ─────────────────────────────────────────────
+     BUTTONS
+  ───────────────────────────────────────────── */
+
   .btn-primary {
-    @apply inline-flex items-center justify-center px-4 py-2 bg-brand-primary hover:bg-blue-600 
+    @apply inline-flex items-center justify-center px-4 py-2 bg-brand-primary hover:bg-blue-600
            text-white font-bold rounded-lg transition-all active:scale-95 cursor-pointer;
   }
-  
+
+  /* Accept a friend request */
+  .btn-accept {
+    @apply text-sm bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5
+           rounded-lg transition-colors font-medium;
+  }
+
+  /* Decline / ignore a friend request */
+  .btn-decline {
+    @apply text-sm bg-gray-800 hover:bg-red-900/40 text-red-400
+           border border-red-900/30 px-4 py-1.5 rounded-lg transition-colors font-medium;
+  }
+
+  /* Cancel a sent request */
+  .btn-cancel {
+    @apply text-xs text-gray-500 hover:text-red-400 border border-gray-800
+           px-3 py-1 rounded-lg transition-colors;
+  }
+
+  /* Add-friend icon button on find-people page */
+  .btn-add-friend {
+    @apply p-2 bg-slate-800 hover:bg-brand-primary text-slate-300
+           hover:text-white rounded-lg transition-all;
+  }
+
+  /* Emoji picker toggle in the chat form */
+  .btn-emoji {
+    @apply px-2 py-1 border border-gray-800 rounded-lg transition-colors hover:bg-gray-800;
+  }
+
+  /* ─────────────────────────────────────────────
+     FORMS
+  ───────────────────────────────────────────── */
+
+  /* Generic form field */
   .form-input {
-    @apply block w-full px-4 py-3 bg-slate-900 border border-brand-border text-white rounded-lg 
+    @apply block w-full px-4 py-3 bg-slate-900 border border-brand-border text-white rounded-lg
            focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all;
   }
+
+  /* Search field on the find-people page */
+  .search-input {
+    @apply w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white
+           placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-all;
+  }
+
+  /* Inline chat message input (slightly shorter than form-input) */
+  .message-input {
+    @apply w-full bg-gray-900 border border-gray-800 rounded-lg text-gray-200 px-3 py-2
+           focus:outline-none focus:border-blue-500 transition-colors;
+  }
+
+  /* ─────────────────────────────────────────────
+     APP HEADER
+  ───────────────────────────────────────────── */
+
+  .app-header {
+    @apply mx-auto px-6 pt-6;
+  }
+
+  .app-logo {
+    @apply text-5xl md:text-3xl font-extrabold tracking-tight
+           transition-colors duration-200 flex items-center;
+  }
+
+  /* ─────────────────────────────────────────────
+     FLASH MESSAGES  (speech-bubble with left arrow)
+  ───────────────────────────────────────────── */
+
+  .notice-bubble,
+  .alert-bubble {
+    @apply relative max-w-xs px-4 py-2 rounded-2xl text-white shadow-sm text-sm leading-relaxed;
+  }
+
+  .notice-bubble {
+    @apply bg-blue-500;
+  }
+
+  .alert-bubble {
+    @apply bg-red-500/90;
+  }
+
+  /* Left-pointing speech-bubble arrow */
+  .notice-bubble::before,
+  .alert-bubble::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+  }
+
+  .notice-bubble::before {
+    border-right: 6px solid #3b82f6; /* blue-500 */
+  }
+
+  .alert-bubble::before {
+    border-right: 6px solid rgb(239 68 68 / 0.9); /* red-500/90 */
+  }
+
+  /* ─────────────────────────────────────────────
+     PROFILE DROPDOWN
+  ───────────────────────────────────────────── */
+
+  /* Circular avatar used in header button and request lists */
+  .avatar-circle {
+    @apply flex items-center justify-center rounded-full
+           bg-blue-100 text-blue-600 font-semibold border border-blue-200;
+  }
+
+  /* Button that opens the dropdown */
+  .profile-toggle {
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg border border-blue-200
+           bg-white/5 hover:bg-white/10 transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-blue-300;
+  }
+
+  /* Dropdown panel itself — JS toggles the `hidden` class */
+  .profile-dropdown {
+    @apply absolute right-0 mt-2 rounded-2xl bg-gray-900 border border-gray-700
+           shadow-2xl backdrop-blur-md z-50 overflow-hidden;
+    width: 300px;
+    min-width: 300px;
+  }
+
+  /* "ACCOUNT" / "PENDING APPROVALS" section headers inside dropdown */
+  .dropdown-section-label {
+    @apply text-[10px] font-bold text-gray-500 uppercase tracking-widest;
+  }
+
+  /* Nav links inside the dropdown (View Profile, Create Group…) */
+  .dropdown-nav-link {
+    @apply flex items-center px-3 py-2.5 text-sm text-gray-300
+           hover:bg-gray-800 hover:text-white rounded-xl transition-colors;
+  }
+
+  /* Individual pending-request row inside the dropdown */
+  .pending-req-card {
+    @apply px-3 py-3 bg-gray-800/20 rounded-xl border border-transparent
+           hover:border-gray-700 transition-all;
+  }
+
+  /* Small avatar inside a pending-request card */
+  .pending-req-avatar {
+    @apply w-9 h-9 rounded-full bg-brand-primary/20 flex items-center justify-center
+           text-sm font-bold text-brand-primary border border-brand-primary/30;
+  }
+
+  /* ─────────────────────────────────────────────
+     DASHBOARD TABS
+  ───────────────────────────────────────────── */
+
+  /* Base tab pill — inactive state */
+  .tab-btn {
+    @apply px-4 py-2 rounded-full text-sm font-semibold tracking-tight transition-all duration-200
+           text-gray-400 hover:text-blue-400 hover:bg-blue-500/10;
+  }
+
+  /* Active modifier — added/removed by JS */
+  .tab-btn--active {
+    @apply bg-blue-500/10 text-blue-400 border border-blue-400/30 shadow-sm;
+  }
+
+  /* ─────────────────────────────────────────────
+     FIND PEOPLE PAGE
+  ───────────────────────────────────────────── */
+
+  /* Person card grid item */
+  .user-card {
+    @apply bg-brand-surface border border-brand-border rounded-xl p-4
+           flex items-center justify-between hover:border-brand-primary/40 transition-all;
+  }
+
+  /* Large circular avatar on user cards */
+  .user-avatar-lg {
+    @apply w-12 h-12 flex-shrink-0 bg-brand-primary/10 text-brand-primary rounded-full
+           flex items-center justify-center text-xl font-bold
+           group-hover:scale-105 transition-transform;
+  }
+
+  /* ─────────────────────────────────────────────
+     FRIEND REQUESTS PAGE
+  ───────────────────────────────────────────── */
+
+  /* Incoming request row */
+  .request-card {
+    @apply flex items-center justify-between bg-gray-900 border border-gray-800
+           rounded-xl p-4 hover:border-blue-500/30 transition-all;
+  }
+
+  /* Sent / outgoing request row (dimmed) */
+  .request-card--sent {
+    @apply flex items-center justify-between bg-gray-900 border border-gray-800
+           rounded-xl p-4 opacity-70;
+  }
+
+  /* Empty state box (small) */
+  .empty-state {
+    @apply text-center py-8 bg-gray-900/50 rounded-xl border border-dashed border-gray-800;
+  }
+
+  /* Empty state box (large, find-people page) */
+  .empty-state--lg {
+    @apply flex flex-col justify-center items-center min-h-[40vh]
+           bg-brand-surface/50 rounded-2xl border border-dashed border-brand-border;
+  }
+
+  /* ─────────────────────────────────────────────
+     CHAT WINDOW
+  ───────────────────────────────────────────── */
+
+  /* Chat header (name + type) */
+  .chat-header {
+    @apply border-b border-gray-800 pb-4 mb-4;
+  }
+
+  /* Scrollable messages area */
+  .messages-container {
+    @apply flex-1 overflow-y-auto space-y-3 pr-2;
+  }
+
+  /* Footer that holds the message form */
+  .chat-form-footer {
+    @apply border-t border-gray-800 pt-4 mt-4;
+  }
+
+  /* Pending-friend waiting notice shown instead of the form */
+  .waiting-state {
+    @apply text-center py-3 bg-gray-900 rounded-lg border border-gray-800;
+  }
+
+  /* ─────────────────────────────────────────────
+     MESSAGE BUBBLES
+  ───────────────────────────────────────────── */
+
+  /* Shared bubble shell */
+  .bubble {
+    @apply max-w-[75%] px-4 py-2 rounded-2xl shadow-sm;
+  }
+
+  /* My own messages */
+  .bubble--mine {
+    @apply bg-blue-500 text-white rounded-br-md;
+  }
+
+  /* Incoming messages */
+  .bubble--theirs {
+    @apply bg-gray-800 text-gray-100 rounded-bl-md border border-gray-700;
+  }
+
 }

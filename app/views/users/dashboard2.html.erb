@@ -4,24 +4,27 @@
     <!-- LEFT PANEL -->
     <section class="lg:col-span-1 border-r border-gray-800 pr-4 flex flex-col">
 
-      <!-- Tabs -->
+      <!-- Tabs (border now connects to vertical border) -->
       <div class="border-b border-gray-800 pb-3 flex gap-2">
         <button
-          class="tab-btn tab-btn--active"
+          class="tab-button px-4 py-2 rounded-full text-sm font-semibold tracking-tight transition-all duration-200
+                 bg-blue-500/10 text-blue-400 border border-blue-400/30 shadow-sm"
           data-target="friends"
           data-url="<%= friends_path %>">
           Friends
         </button>
 
         <button
-          class="tab-btn"
+          class="tab-button px-4 py-2 rounded-full text-sm font-semibold tracking-tight transition-all duration-200
+                 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10"
           data-target="groups"
           data-url="<%= groups_path %>">
           Groups
         </button>
 
         <button
-          class="tab-btn"
+          class="tab-button px-4 py-2 rounded-full text-sm font-semibold tracking-tight transition-all duration-200
+                 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10"
           data-target="find_friends"
           data-url="<%= find_friends_users_path %>">
           Find People
@@ -80,7 +83,7 @@
       $('#chat-window').off('submit.chatForm').on('submit.chatForm', '#chat-message-form', function(event) {
         event.preventDefault();
         const $form = $(this);
-        const chatId = $form.find('input[name="chat_id"]').val();
+        const chatId = $form.find('input[name="chat_id"]').val(); 
         const $input = $('#chat-message-body');
         const body = $input.val().trim();
 
@@ -97,7 +100,7 @@
             'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
             'Accept': 'application/json'
           },
-          data: $form.serialize(),
+          data: $form.serialize(), 
           success: function(response) {
             $input.val('');
           },
@@ -113,30 +116,32 @@
       });
     }
 
-    // Reverse infinite scroll (WhatsApp style)
+    // --- REVERSE INFINITE SCROLL ---
     function bindInfiniteScroll() {
       const $container = $('#messages-scroll-container');
-
+      
       $container.off('scroll.infinite').on('scroll.infinite', function() {
-        if ($(this).scrollTop() < 50) {
+        if ($(this).scrollTop() < 50) { // Trigger near top
           const $loadLink = $('.older-messages-link');
           if ($loadLink.length && !window.isLoadingOlder) {
             window.isLoadingOlder = true;
-
+            
+            // Record height before load to maintain scroll position
             const oldHeight = $container.prop('scrollHeight');
             const url = $loadLink.attr('href');
-
+ 
             $.get(url, function(html) {
               const $payload = $('<div>').html(html);
               const $batch = $payload.find('#older-messages-batch').children();
               const $nextLink = $payload.find('#older-next-link').html();
-
+ 
               $('#messages-list').prepend($batch);
               $('#history-loader').html($nextLink);
-
+              
+              // Maintain scroll position (WhatsApp style)
               const newHeight = $container.prop('scrollHeight');
               $container.scrollTop(newHeight - oldHeight);
-
+              
               bootTimeago();
               window.isLoadingOlder = false;
             });
@@ -144,31 +149,35 @@
         }
       });
     }
-
+ 
     function bindConversationRows() {
       $('#dashboard-content').off('click.chatLoad', '.friend-row, .group-row').on('click.chatLoad', '.friend-row, .group-row', function() {
         const chatId = $(this).data('chat-id');
         const chatType = $(this).data('chat-type');
         if (!chatId) return;
-
+ 
         window.activeChatType = chatType;
         $('#chat-window').load('/chats/' + chatId + '/messages', function() {
           window.ChatRealtime.subscribe(chatId);
           bootTimeago();
           scrollToBottom();
           bindMessageForm();
-          bindInfiniteScroll();
+          bindInfiniteScroll(); // Setup the scroll listener
         });
       });
     }
 
-    // Tab switching — uses .tab-btn / .tab-btn--active from application.css
-    $(document).off('click.dashboardTabs', '.tab-btn').on('click.dashboardTabs', '.tab-btn', function() {
+    $(document).off('click.dashboardTabs', '.tab-button').on('click.dashboardTabs', '.tab-button', function() {
       const $btn = $(this);
       const url = $btn.data('url');
 
-      $('.tab-btn').removeClass('tab-btn--active');
-      $btn.addClass('tab-btn--active');
+      $('.tab-button')
+        .removeClass('bg-blue-500/10 text-blue-400 border border-blue-400/30 shadow-sm')
+        .addClass('text-gray-400');
+
+      $btn
+        .removeClass('text-gray-400')
+        .addClass('bg-blue-500/10 text-blue-400 border border-blue-400/30 shadow-sm');
 
       $('#dashboard-content').fadeOut(100, function() {
         $(this).load(url, function() {

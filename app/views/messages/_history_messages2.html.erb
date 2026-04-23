@@ -4,8 +4,6 @@
 
 <div id="older-next-link">
   <% if next_page.present? %>
-    <%= link_to "Load older",
-        chat_messages_path(chat_id: params[:chat_id], page: next_page, prepend: 1),
-        class: "text-xs text-blue-400 nav-link older-messages-link" %>
+    <%= link_to "Load older", chat_messages_path(chat_id: params[:chat_id], page: next_page, prepend: 1), class: "text-xs text-blue-400 nav-link older-messages-link" %>
   <% end %>
 </div>
