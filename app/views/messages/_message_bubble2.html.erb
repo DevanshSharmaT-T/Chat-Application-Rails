@@ -1,7 +1,12 @@
 <% mine = current_user&.persisted? && (message.user_id == current_user.id) %>
 
 <div class="flex <%= mine ? 'justify-end' : 'justify-start' %> mb-3" data-message-id="<%= message.id %>">
-  <div class="bubble <%= mine ? 'bubble--mine' : 'bubble--theirs' %>">
+  <div class="
+    max-w-[75%] px-4 py-2 rounded-2xl shadow-sm
+    <%= mine ?
+      'bg-blue-500 text-white rounded-br-md' :
+      'bg-gray-800 text-gray-100 rounded-bl-md border border-gray-700' %>
+  ">
 
     <% if message.chat.chatable_type == "Group" && !mine %>
       <p class="text-[11px] text-blue-400 mb-1 font-semibold">
@@ -9,7 +14,9 @@
       </p>
     <% end %>
 
-    <p class="text-sm leading-relaxed break-words"><%= message.body %></p>
+    <p class="text-sm leading-relaxed break-words">
+      <%= message.body %>
+    </p>
 
     <p class="text-[10px] mt-1 opacity-70 text-right timeago"
        datetime="<%= message.created_at.iso8601 %>">

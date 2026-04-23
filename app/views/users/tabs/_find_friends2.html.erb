@@ -1,11 +1,9 @@
 <div class="space-y-6">
-
-  <!-- Search field -->
   <div class="relative">
-    <input type="text"
-           id="user-search-input"
-           placeholder="Search for people..."
-           class="search-input">
+    <input type="text" 
+           id="user-search-input" 
+           placeholder="Search for people..." 
+           class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-all">
     <div class="absolute right-4 top-3.5 text-gray-500">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -16,14 +14,17 @@
   <% if @possible_friends_list.any? %>
     <div class="grid grid-cols-1 gap-4" id="possible-friends-grid">
       <% @possible_friends_list.each do |user| %>
-        <div class="user-card" data-name="<%= user.full_name.downcase %>">
-
-          <!-- Left: Avatar + Name/Status -->
+        <div class="user-card bg-brand-surface border border-brand-border rounded-xl p-4 flex items-center justify-between hover:border-brand-primary/40 transition-all group" 
+             data-name="<%= user.full_name.downcase %>">
+          
+          <%# Left side: Avatar + Name/Status column %>
           <div class="flex items-center gap-4">
-            <div class="user-avatar-lg">
+            <%# Small Circle Avatar %>
+            <div class="w-12 h-12 flex-shrink-0 bg-brand-primary/10 text-brand-primary rounded-full flex items-center justify-center text-xl font-bold group-hover:scale-105 transition-transform">
               <%= user.first_name[0] %>
             </div>
-
+  
+            <%# Words %>
             <div class="text-left">
               <h3 class="text-sm font-bold text-white"><%= user.full_name %></h3>
               <p class="text-xs text-slate-500 truncate max-w-[150px] md:max-w-[200px]">
@@ -31,28 +32,27 @@
               </p>
             </div>
           </div>
-
-          <!-- Right: Add friend -->
+  
+          <%# Right side: The Action %>
           <div class="flex-shrink-0">
-            <%= button_to friends_path(addressee_id: user.id),
-                          method: :post,
-                          class: "btn-add-friend" do %>
+            <%# Me use addressee_id for new schema! %>
+            <%= button_to friends_path(addressee_id: user.id), 
+                          method: :post, 
+                          class: "p-2 bg-slate-800 hover:bg-brand-primary text-slate-300 hover:text-white rounded-lg transition-all" do %>
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
               </svg>
             <% end %>
           </div>
-
+          
         </div>
       <% end %>
     </div>
   <% else %>
-    <div class="empty-state--lg">
+    <div class="flex flex-col justify-center items-center min-h-[40vh] bg-brand-surface/50 rounded-2xl border border-dashed border-brand-border">
       <p class="text-slate-500">Tribe is full. No more strangers to find.</p>
     </div>
   <% end %>
-
-</div>
 
 <script nonce="<%= content_security_policy_nonce %>">
   $('#user-search-input').off('keyup.findFriends').on('keyup.findFriends', function() {

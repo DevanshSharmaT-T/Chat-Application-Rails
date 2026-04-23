@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Chat App" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Chat App">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" nonce="<%= content_security_policy_nonce %>"></script>
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :tailwind, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <div class="bg-animated-layer">
+      <div class="el"></div>
+    </div>
+
+    <main class="main-content-wrapper">
+      <% if user_signed_in? %>
+          <header class="header-container">
+            <div class="header-nav-card card-main">
+          
+              <div class="header-left-section">
+                <%= link_to dashboard_users_path, data: { turbo_prefetch: false }, class: "logo-link" do %>
+                  <span class="logo-text-blue">Chat</span>
+                  <span class="logo-text-white">App</span>
+                <% end %>
+          
+                <% if notice.present? %>
+                  <div class="flash-bubble flash-notice">
+                    <%= notice %>
+                  </div>
+                <% elsif alert.present? %>
+                  <div class="flash-bubble flash-alert">
+                    <%= alert %>
+                  </div>
+                <% end %>
+              </div>
+          
+              <div class="relative">
+                <button id="profile-dropdown-toggle" type="button" class="profile-toggle-btn">
+                  <div class="avatar-circle profile-avatar">
+                    <%= current_user.first_name.to_s.first&.upcase || current_user.email.to_s.first&.upcase %>
+                  </div>
+
+                  <div class="profile-info-text">
+                    <p class="profile-name"><%= current_user.full_name %></p>
+                    <p class="profile-status"><%= current_user.status.presence || "Offline" %></p>
+                  </div>
+                </button>
+
+                <div id="profile-dropdown-menu" class="profile-dropdown-panel">
+                  <div class="dropdown-content-inner">
+                    <div class="dropdown-header">
+                      <p class="dropdown-label">Account</p>
+                    </div>
+
+                    <%= link_to user_path(current_user), data: { turbo_prefetch: false }, class: "dropdown-link" do %>
+                      <i class="material-icons dropdown-icon text-blue-400">person</i>
+                      <span class="font-medium">View Profile</span>
+                    <% end %>
+
+                    <%= link_to "#", class: "dropdown-link" do %>
+                      <i class="material-icons dropdown-icon text-green-400">group_add</i>
+                      <span class="font-medium">Create Group</span>
+                    <% end %>
+
+                    <div class="dropdown-header mt-2">
+                      <p class="dropdown-label">Pending Approvals</p>
+                    </div>
+
+                    <% if @pending_requests.any? %>
+                      <div class="pending-requests-list">
+                        <% @pending_requests.each do |req| %>
+                          <div class="request-card">
+                            <div class="request-user-info">
+                              <div class="request-avatar">
+                                <%= req.requester.first_name[0] %>
+                              </div>
+                              <div class="flex flex-col">
+                                <span class="request-user-name"><%= req.requester.full_name %></span>
+                                <span class="request-user-subtext">wants to be friends</span>
+                              </div>
+                            </div>
+
+                            <div class="request-actions">
+                              <%= button_to "Approve", friendship_path(req, friendship: { status: :accepted }), 
+                                          method: :patch, class: "btn-approve" %>
+                              <%= button_to "Ignore", friendship_path(req), 
+                                          method: :delete, class: "btn-ignore" %>
+                            </div>
+                          </div>
+                        <% end %>
+                      </div>
+                    <% else %>
+                      <div class="empty-requests">
+                        <p class="empty-text">No pending handshakes</p>
+                      </div>
+                    <% end %>
+
+                    <div class="dropdown-footer">
+                      <%= link_to requests_friends_path, data: { turbo_prefetch: false }, class: "manage-requests-link" do %>
+                        MANAGE ALL REQUESTS
+                      <% end %>
+
+                      <%= button_to destroy_user_session_path, method: :delete, class: "sign-out-btn" do %>
+                        <i class="material-icons dropdown-icon">logout</i>
+                        <span>Sign Out</span>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </header>
+      <% end %>
+
+      <%= yield %>
+    </main>
+
+    <script type="text/javascript" nonce="<%= content_security_policy_nonce %>">
+     $(document).on('turbo:load', function() {
+        $(document).off('click', '#profile-dropdown-toggle').on('click', '#profile-dropdown-toggle', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          $('#profile-dropdown-menu').toggleClass('hidden');
+        });
+
+        $(document).off('click', 'body').on('click', 'body', function(e) {
+          if (!$(e.target).closest('#profile-dropdown-toggle, #profile-dropdown-menu').length) {
+            $('#profile-dropdown-menu').addClass('hidden');
+        }
+      });
+     });
+    </script>
+  </body>
+</html>

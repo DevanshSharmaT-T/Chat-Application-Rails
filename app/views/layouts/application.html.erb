@@ -11,9 +11,6 @@
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
@@ -21,9 +18,7 @@
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" nonce="<%= content_security_policy_nonce %>"></script>
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :tailwind, "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag :application, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
@@ -35,137 +30,114 @@
 
     <main class="relative z-10">
       <% if user_signed_in? %>
-          <header class="mx-auto px-6 pt-6">
-            <div class="flex items-center justify-between card-main relative z-40">
-          
-              <!-- LEFT: Logo + Notice -->
-              <div class="flex items-center gap-4">
-          
-                <!-- Chat App -->
-                <%= link_to dashboard_users_path, data: { turbo_prefetch: false }, 
-                    class: "text-5xl md:text-3xl font-extrabold tracking-tight text-blue-600 hover:text-blue-700 transition-colors duration-200 flex items-center" do %>
-                  <span class="text-blue-600 hover:text-white">Chat</span>
-                  <span class="text-gray-100 hover:text-blue-600">App</span>
-                <% end %>
-          
-                <% if notice.present? %>
-                  <div class="relative max-w-xs px-4 py-2 rounded-2xl bg-blue-500 text-white shadow-sm text-sm leading-relaxed
-                              before:content-[''] before:absolute before:left-[-6px] before:top-1/2 before:-translate-y-1/2
-                              before:border-y-[6px] before:border-y-transparent before:border-r-[6px] before:border-r-blue-500">
-                    <%= notice %>
-                  </div>
-                <% elsif alert.present? %>
-                  <div class="relative max-w-xs px-4 py-2 rounded-2xl bg-red-500/90 text-white shadow-sm text-sm leading-relaxed
-                              before:content-[''] before:absolute before:left-[-6px] before:top-1/2 before:-translate-y-1/2
-                              before:border-y-[6px] before:border-y-transparent before:border-r-[6px] before:border-r-red-500">
-                    <%= alert %>
-                  </div>
-                <% end %>
-          
-              </div>
-          
-              <!-- RIGHT: Profile -->
-              <div class="relative">
-                <button
-                  id="profile-dropdown-toggle"
-                  type="button"
-                  class="flex items-center gap-3 px-3 py-2 rounded-lg border border-blue-200 bg-white/5 hover:bg-white/10 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                >
-                  <div class="avatar-circle w-10 h-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 font-semibold border border-blue-200">
-                    <%= current_user.first_name.to_s.first&.upcase || current_user.email.to_s.first&.upcase %>
-                  </div>
+        <header class="app-header">
+          <div class="flex items-center justify-between relative z-40">
 
-                  <div class="text-left leading-tight">
-                    <p class="text-sm font-medium text-white">
-                      <%= current_user.full_name %>
-                    </p>
-                    <p class="text-xs text-gray-400">
-                      <%= current_user.status.presence || "Offline" %>
-                    </p>
-                  </div>
-                </button>
+            <div class="flex items-center gap-4">
+              <%= link_to dashboard_users_path, data: { turbo_prefetch: false }, class: "app-logo" do %>
+                <span class="text-blue-600 hover:text-white">Chat</span>
+                <span class="text-gray-100 hover:text-blue-600">App</span>
+              <% end %>
 
-                <div id="profile-dropdown-menu" 
-                  class="hidden absolute right-0 mt-2 rounded-2xl bg-gray-900 border border-gray-700 shadow-2xl backdrop-blur-md z-50 overflow-hidden"
-                  style="width: 300px !important; min-width: 300px !important;">
+              <% if notice.present? %>
+                <div class="notice-bubble"><%= notice %></div>
+              <% elsif alert.present? %>
+                <div class="alert-bubble"><%= alert %></div>
+              <% end %>
+            </div>
 
+            <div class="relative">
+              <button id="profile-dropdown-toggle" type="button" class="profile-toggle">
+                <div class="avatar-circle w-10 h-10">
+                  <%= current_user.first_name.to_s.first&.upcase || current_user.email.to_s.first&.upcase %>
+                </div>
+
+                <div class="text-left leading-tight">
+                  <p class="text-sm font-medium text-white"><%= current_user.full_name %></p>
+                  <p class="text-xs text-gray-400"><%= current_user.status.presence || "Offline" %></p>
+                </div>
+              </button>
+
+              <div id="profile-dropdown-menu" class="profile-dropdown hidden">
                 <div class="py-2 px-2">
-                    <div class="px-3 py-2 border-b border-gray-800 mb-1">
-                      <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Account</p>
-                    </div>
 
-                    <%= link_to user_path(current_user), data: { turbo_prefetch: false }, class: "flex items-center px-3 py-2.5 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-xl transition-colors" do %>
-                      <i class="material-icons text-base mr-3 text-blue-400">person</i>
-                      <span class="font-medium">View Profile</span>
-                    <% end %>
+                  <div class="px-3 py-2 border-b border-gray-800 mb-1">
+                    <p class="dropdown-section-label">Account</p>
+                  </div>
 
-                    <%= link_to "#", class: "flex items-center px-3 py-2.5 text-sm text-gray-300 hover:bg-gray-800 hover:text-white rounded-xl transition-colors" do %>
-                      <i class="material-icons text-base mr-3 text-green-400">group_add</i>
-                      <span class="font-medium">Create Group</span>
-                    <% end %>
+                  <%= link_to user_path(current_user), data: { turbo_prefetch: false }, class: "dropdown-nav-link" do %>
+                    <i class="material-icons text-base mr-3 text-blue-400">person</i>
+                    <span class="font-medium">View Profile</span>
+                  <% end %>
 
-                    <div class="px-3 py-2 border-b border-gray-800 mt-2 mb-1">
-                      <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Pending Approvals</p>
-                    </div>
+                  <%= link_to "#", class: "dropdown-nav-link" do %>
+                    <i class="material-icons text-base mr-3 text-green-400">group_add</i>
+                    <span class="font-medium">Create Group</span>
+                  <% end %>
 
-                    <% if @pending_requests.any? %>
-                      <div class="max-h-64 overflow-y-auto space-y-1">
-                        <% @pending_requests.each do |req| %>
-                          <div class="px-3 py-3 bg-gray-800/20 rounded-xl border border-transparent hover:border-gray-700 transition-all">
-                            <div class="flex items-center gap-3 mb-3">
-                              <div class="w-9 h-9 rounded-full bg-brand-primary/20 flex items-center justify-center text-sm font-bold text-brand-primary border border-brand-primary/30">
-                                <%= req.requester.first_name[0] %>
-                              </div>
-                              <div class="flex flex-col">
-                                <span class="text-sm font-bold text-slate-200 leading-none"><%= req.requester.full_name %></span>
-                                <span class="text-[10px] text-slate-500 mt-1">wants to be friends</span>
-                              </div>
+                  <div class="px-3 py-2 border-b border-gray-800 mt-2 mb-1">
+                    <p class="dropdown-section-label">Pending Approvals</p>
+                  </div>
+
+                  <% if @pending_requests.any? %>
+                    <div class="max-h-64 overflow-y-auto space-y-1">
+                      <% @pending_requests.each do |req| %>
+                        <div class="pending-req-card">
+                          <div class="flex items-center gap-3 mb-3">
+                            <div class="pending-req-avatar">
+                              <%= req.requester.first_name[0] %>
                             </div>
-
-                            <div class="flex gap-2">
-                              <%= button_to "Approve", friendship_path(req, friendship: { status: :accepted }), 
-                                            method: :patch, 
-                                            class: "flex-1 text-xs font-bold py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-primary/80 transition-colors" %>
-
-                              <%= button_to "Ignore", friendship_path(req), 
-                                            method: :delete, 
-                                            class: "flex-1 text-xs font-bold py-2 bg-slate-700 text-slate-300 rounded-lg hover:bg-slate-600 transition-colors" %>
+                            <div class="flex flex-col">
+                              <span class="text-sm font-bold text-slate-200 leading-none"><%= req.requester.full_name %></span>
+                              <span class="text-[10px] text-slate-500 mt-1">wants to be friends</span>
                             </div>
                           </div>
-                        <% end %>
-                      </div>
-                    <% else %>
-                      <div class="px-3 py-6 text-center">
-                        <p class="text-xs text-gray-600 italic">No pending handshakes</p>
-                      </div>
-                    <% end %>
 
-                    <div class="mt-2 border-t border-gray-800 pt-1">
-                      <%= link_to requests_friends_path, data: { turbo_prefetch: false }, class: "block text-center py-2 text-[11px] font-bold text-blue-400 hover:text-blue-300 transition-colors" do %>
-                        MANAGE ALL REQUESTS
-                      <% end %>
+                          <div class="flex gap-2">
+                            <%= button_to "Approve", friendship_path(req, friendship: { status: :accepted }),
+                                          method: :patch,
+                                          class: "flex-1 text-xs font-bold py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-primary/80 transition-colors" %>
 
-                      <%= button_to destroy_user_session_path,
-                          method: :delete,
-                          class: "flex items-center w-full text-left px-3 py-2.5 mt-1 text-sm font-bold text-red-400 hover:bg-red-900/20 rounded-xl transition-colors bg-transparent border-none cursor-pointer" do %>
-                        <i class="material-icons text-base mr-3">logout</i>
-                        <span>Sign Out</span>
+                            <%= button_to "Ignore", friendship_path(req),
+                                          method: :delete,
+                                          class: "flex-1 text-xs font-bold py-2 bg-slate-700 text-slate-300 rounded-lg hover:bg-slate-600 transition-colors" %>
+                          </div>
+                        </div>
                       <% end %>
                     </div>
+                  <% else %>
+                    <div class="px-3 py-6 text-center">
+                      <p class="text-xs text-gray-600 italic">No pending handshakes</p>
+                    </div>
+                  <% end %>
+
+                  <div class="mt-2 border-t border-gray-800 pt-1">
+                    <%= link_to requests_friends_path, data: { turbo_prefetch: false },
+                        class: "block text-center py-2 text-[11px] font-bold text-blue-400 hover:text-blue-300 transition-colors" do %>
+                      MANAGE ALL REQUESTS
+                    <% end %>
+
+                    <%= button_to destroy_user_session_path,
+                        method: :delete,
+                        class: "flex items-center w-full text-left px-3 py-2.5 mt-1 text-sm font-bold text-red-400 hover:bg-red-900/20 rounded-xl transition-colors bg-transparent border-none cursor-pointer" do %>
+                      <i class="material-icons text-base mr-3">logout</i>
+                      <span>Sign Out</span>
+                    <% end %>
                   </div>
+
                 </div>
               </div>
-
             </div>
-          </header>
-      <% end %>
 
+          </div>
+        </header>
+      <% end %>
 
       <%= yield %>
     </main>
 
     <script type="text/javascript" nonce="<%= content_security_policy_nonce %>">
-     $(document).on('turbo:load', function() {
+      $(document).on('turbo:load', function() {
         $(document).off('click', '#profile-dropdown-toggle').on('click', '#profile-dropdown-toggle', function(e) {
           e.preventDefault();
           e.stopPropagation();
@@ -175,9 +147,9 @@
         $(document).off('click', 'body').on('click', 'body', function(e) {
           if (!$(e.target).closest('#profile-dropdown-toggle, #profile-dropdown-menu').length) {
             $('#profile-dropdown-menu').addClass('hidden');
-        }
+          }
+        });
       });
-     });
     </script>
   </body>
 </html>
