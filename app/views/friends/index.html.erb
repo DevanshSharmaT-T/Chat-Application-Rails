@@ -1,11 +1,13 @@
 <% if @friends_list.any? %>
   <div class="grid gap-4">
     <% @friends_list.each do |friend| %>
-      <% friendship = Friend.find_by(user_id: current_user.id, friend_user_id: friend.id) || Friend.find_by(user_id: friend.id, friend_user_id: current_user.id) %>
+        <% friendship = Friendship.where(status: :accepted)
+                                  .find_by("(requester_id = ? AND addressee_id = ?) OR (requester_id = ? AND addressee_id = ?)", 
+                                  current_user.id, friend.id, friend.id, current_user.id) %>
 
       <div class="friend-row w-full bg-gray-900 border border-gray-800 p-4 rounded-xl flex items-center gap-4 cursor-pointer hover:border-blue-500/50 transition-all"
            data-chat-id="<%= friendship&.chat&.id %>"
-           data-chat-type="Friend">
+           data-chat-type="direct_message">
         <div class="w-12 h-12 bg-blue-900/30 text-blue-400 rounded-full flex items-center justify-center font-bold">
           <%= friend.first_name[0] %>
         </div>

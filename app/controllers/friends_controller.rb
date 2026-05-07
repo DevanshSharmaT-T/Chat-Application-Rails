@@ -4,7 +4,7 @@ class FriendsController < ApplicationController
   def index
     friend_ids = Friend.where(user_id: current_user.id).select(:friend_user_id)
     inverse_ids = Friend.where(friend_user_id: current_user.id).select(:user_id)
-    @friends_list = User.where(id: friend_ids).or(User.where(id: inverse_ids))
+    @friends_list = current_user.friends
     render layout: false if request.xhr?
   end
 
@@ -29,7 +29,7 @@ class FriendsController < ApplicationController
     if @friendship.addressee_id == current_user.id && @friendship.update(friendship_params)
       @friendship.update(accepted_at: Time.current) if @friendship.accepted?
 
-      redirect_back fallback_location: dashboard_users_path, notice: "Request updated!"
+      redirect_back fallback_location: dashboard_users_path, notice: "Request Accepted!"
     else
       redirect_back fallback_location: requests_friends_path, alert: "Cannot do that."
     end

@@ -55,9 +55,9 @@ class User < ApplicationRecord
   # Associations - Friendships
   has_many :sent_friendships, class_name: "Friendship", foreign_key: :requester_id, dependent: :destroy
   has_many :received_friendships, class_name: "Friendship", foreign_key: :addressee_id, dependent: :destroy
-  has_many :added_friends, -> { where(friendships: { status: :accepted }) }, 
+  has_many :added_friends, -> { where(friendships: { status: 1 }) },
              through: :sent_friendships, source: :addressee
-  has_many :adding_friends, -> { where(friendships: { status: :accepted }) }, 
+  has_many :adding_friends, -> { where(friendships: { status: 1 }) },
              through: :received_friendships, source: :requester
 
   # Associations - Groups

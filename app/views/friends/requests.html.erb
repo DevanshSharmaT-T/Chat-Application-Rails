@@ -17,14 +17,14 @@
           <% @pending_received.each do |req| %>
             <div class="request-card">
               <div class="flex items-center gap-3">
-                <div class="avatar-circle w-10 h-10"><%= req.user.first_name.first.upcase %></div>
+                <div class="avatar-circle w-10 h-10"><%= req.requester.first_name.first.upcase %></div>
                 <div>
-                  <p class="font-medium text-gray-200"><%= req.user.full_name %></p>
-                  <p class="text-xs text-gray-500"><%= req.user.status.presence || "Wants to connect" %></p>
+                  <p class="font-medium text-gray-200"><%= req.requester.full_name %></p>
+                  <p class="text-xs text-gray-500"><%= req.requester.status.presence || "Wants to connect" %></p>
                 </div>
               </div>
               <div class="flex gap-2">
-                <%= button_to "Accept", friend_path(req, friend: { status: 'accepted' }),
+                <%= button_to "Accept", friendship_path(req, friendship: { status: :accepted }),
                     method: :patch, class: "btn-accept" %>
                 <%= button_to "Decline", friend_path(req),
                     method: :delete, class: "btn-decline" %>

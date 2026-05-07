@@ -34,7 +34,7 @@ class Friendship < ApplicationRecord
 
   validates :requester_id, uniqueness: { scope: :addressee_id, conditions: -> { where(deleted_at: nil) } }
 
-  after_create :create_dm
+  after_update :create_dm, if: -> { accepted? }
 
   scope :pending_requests, ->(user) { where(status: :pending, addressee_id: user.id) }
   scope :sent_requests, ->(user) { where(status: :pending, requester_id: user.id) }
@@ -43,6 +43,20 @@ class Friendship < ApplicationRecord
   private
 
   def create_dm
-    create_chat!(chat_name: "#{requester.full_name} & #{addressee.full_name}", chat_type: :direct)
+    return if chat.present?
+
+    ActiveRecord::Base.transaction do
+      new_chat = create_chat!(
+        chat_name: "DM: #{requester.username} & #{addressee.username}", 
+        chat_type: :direct_message
+      )
+
+      [requester, addressee].each do |u|
+        new_chat.participants.create!(user: u)
+      end
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    Rails.logger.error "Failed to create DM for Friendship #{@friendship.id}: #{e.message}"
+    raise ActiveRecord::Rollback
   end
 end
